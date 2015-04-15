@@ -1,0 +1,56 @@
+/*
+	ltblue: 			8fa6c6
+	top dark blue:		083474
+	bot dark blue:		002862
+	
+*/
+
+
+/*-------------------------------------
+	Fonts
+-------------------------------------*/
+@font-face {
+	font-family: New_Cicle_Semi;
+	src: url('../fonts/New_Cicle_Semi.ttf');
+}
+
+
+/* ------------------------------------------------------- Globals*/
+*{
+	padding:0;
+	margin:0;
+}
+
+body{	
+	
+	font-family: 'TeeFranklin-HeavyOblique';
+	font-size:13px;
+	margin:0px;
+	padding:0;
+	background-image: url(../images/bg.png);
+}
+
+p {
+	padding: 0 10px 0 15px;
+	line-height: 150%;	
+}
+
+h1, h2 ,h3{
+	padding: 10px;
+}
+
+.fl {
+	float: left;
+}
+	
+.fr {
+	float: right;
+}
+
+a:link {color:#FFFFFF; text-decoration:none;}
+a:visited {color:#002862;text-decoration:none;}
+a:hover {color:#FF9933;text-decoration:none;}
+a:active {color:#FF9933;text-decoration:none;}
+
+
+/* --------------------------------------------------------------*/

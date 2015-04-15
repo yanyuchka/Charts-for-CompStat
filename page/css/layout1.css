@@ -1,0 +1,49 @@
+
+/* ------------------------------------------------------- Structure*/
+#container{	
+	margin: 0 auto;
+	padding: 33px;
+}
+
+#banner{
+	border: 1px solid #002862;
+	border-top: 0;
+}
+
+
+#menu{
+	float:left;
+	padding: 0 0 0 1px;
+
+}
+
+#content{	
+	background-color: #FFF;
+	border: 1px solid #002862;
+	border-top: 0;
+}
+
+#footer {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size:10px; 
+	color: #FFF;
+	clear:both;		
+	width:auto;
+	height:75px;		
+	background-color: #002862;
+}
+
+.page{
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #FFF;
+	width: 740px;
+	height: 850px;
+	border: 1px solid #FFF;
+
+	/*border-radius: 10px;	*/
+	box-shadow: -1px 40px 40px rgba(1,1,1,0.8);
+}
+
+
+/* -------------------------------------------------------------------*/
