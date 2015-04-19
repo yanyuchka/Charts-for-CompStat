@@ -1,8 +1,9 @@
-# Project X
+# Charts-for-CompStat
 
-TODO describe project here
+This is an ongoing project aims to enhance the NYPD performance analysis by developing a web-based interactive visualization tool that communicates not only [traditional aggregation statistics] (http://www.nyc.gov/html/nypd/html/crime_prevention/crime_statistics.shtml), but one that would reveal hiden events in the data, while using an open [dataset] (https://data.cityofnewyork.us/Public-Safety/NYPD-Motor-Vehicle-Collisions/h9gi-nx95) on Motor Vehicle Collisions published by the NYPD as a case study.
 
-A live demo can be found [here](http://NYU-CS6313-Projects.github.io/sp2015-group23/).
+ 
 
-You can use the `deploy.sh` script to keep the `gh-pages` branch up-to-date.
-When forking this project be sure to update the link to the demo page in this file.
+
+
+Use this [notebook](http://nbviewer.ipython.org/github/yanyuchka/Charts-for-CompStat/blob/master/smpl_stats_explr.ipynb) to see how the crash data look like. 

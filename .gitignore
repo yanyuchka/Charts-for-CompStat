@@ -1,1 +1,15 @@
 **/.DS_Store
+
+# raw data
+*rows_crashdata.csv
+crashdata.csv
+wget.log
+
+# vim temp
+*~
+
+# ipython checkpoints
+*-checkpoint.ipynb
+.ipynb_checkpoints
+*.tmp.ipynb
+
