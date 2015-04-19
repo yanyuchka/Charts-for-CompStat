@@ -6,4 +6,4 @@ This is an ongoing project aims to enhance the NYPD performance analysis by deve
 
 
 
-Use this [notebook](http://nbviewer.ipython.org/github/NYU-CS6313-Projects/sp2015-group23/blob/master/data/data_explr.ipynb) to see how the crash data look like. 
+Use this [notebook](http://nbviewer.ipython.org/github/NYU-CS6313-Projects/sp2015-group23/blob/master/data/data_explr.ipynb) to see how the crash data looks like. 
