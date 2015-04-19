@@ -1,8 +1,8 @@
-T License
+License
 
 Copyright (c) 2010-2015: Kun Chen, Neil Ramos, Olga Ianiuk: 
 
-https://github.com/yanyuchka/Charts-for-CompStat
+https://github.com/NYU-CS6313-Projects/sp2015-group23
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
