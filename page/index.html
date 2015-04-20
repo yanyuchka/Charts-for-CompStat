@@ -1,11 +1,14 @@
 <!DOCTYPE html><html>
 
-<!--BEGIN Head-->
 <head>	
 	<title>Charts-for-CompStat</title>
 	<link rel="stylesheet" type="text/css" href="./css/layout1.css" />
 	<link rel="stylesheet" type="text/css" href="./css/topbar.css" />
-	<link rel="stylesheet" type="text/css" href="./css/global.css" />		
+	<link rel="stylesheet" type="text/css" href="./css/global.css" />
+
+	<link rel="stylesheet" type="text/css" href="./css/sparkline.css">  
+  	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
 	<meta name="Keywords" content="Charts-for-CompStat" />
 	<meta name="Description" content="" />
@@ -43,17 +46,23 @@
 	</div>
 	
 	
-	
-	
-	
 	<div id="container">
 	
 		<div class="page">
-			
+			<div id="sparkline1" class="sparkline"><p>Number of Persons Injured</p></div>
+			<div id="sparkline2" class="sparkline"><p>Number of Persons Killed</p></div>
+			<div id="sparkline3" class="sparkline"><p>Number of Motorists Injured</p></div>
+			<div id="sparkline4" class="sparkline"><p>Number of Motorists Killed</p></div>
+			<div id="sparkline5" class="sparkline"><p>Number of Cyclists Injured</p></div>
+			<div id="sparkline6" class="sparkline"><p>Number of Cyclists Killed</p></div>
+			<div id="sparkline7" class="sparkline"><p>Number of Pedestrians Injured</p></div>
+			<div id="sparkline8" class="sparkline"><p>Number of Pedestrians Killed</p></div>
 		</div>				
 			
 	</div>
-	
+
+	<script src="http://d3js.org/d3.v3.js"></script>
+	<script src="./js/sparkline.js"></script> 	
 
 </body>
 </html>
