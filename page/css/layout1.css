@@ -36,6 +36,7 @@
 .page{
 	margin-left: auto;
 	margin-right: auto;
+	padding: 30px;
 	background-color: #FFF;
 	width: 740px;
 	height: 850px;

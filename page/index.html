@@ -5,13 +5,61 @@
 	<link rel="stylesheet" type="text/css" href="./css/layout1.css" />
 	<link rel="stylesheet" type="text/css" href="./css/topbar.css" />
 	<link rel="stylesheet" type="text/css" href="./css/global.css" />
+	<link rel="stylesheet" type="text/css" href="./css/slider.css" />
 
 	<link rel="stylesheet" type="text/css" href="./css/sparkline.css">  
   	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
   	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+
+
 	<meta name="Keywords" content="Charts-for-CompStat" />
 	<meta name="Description" content="" />
+
+
+	<!-- Test time for the slider -->
+	<!-- FOR DEBUGGING ONLY -->
+	<script>
+    var dates = ["2015-01-01",
+                 "2015-01-02", 
+                 "2015-01-03",
+                 "2015-01-04",
+                 "2015-01-05",
+                 "2015-01-06",
+                 "2015-01-07",
+                 "2015-01-08",
+                 "2015-01-09",
+                 "2015-01-10",
+                 "2015-01-11",
+                 "2015-01-12",
+                 "2015-01-13",
+                 "2015-01-14",
+                 "2015-01-15"
+                 ];
+  	</script>	
+
+
+	<!-- Time Slider -->
+	<script>
+		$(function() {
+			$( "#slider-range" ).slider({
+				range: true,
+				min: 0,
+				max: dates.length-1,
+				values: [ 0, dates.length-1 ],
+				slide: function( event, ui ) {
+				tMin = dates[parseInt(ui.values[0])];
+				tMax = dates[parseInt(ui.values[1])];
+				$( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
+				}
+			});
+			tMin = dates[parseInt($( "#slider-range" ).slider( "values", 0 ))];
+			tMax = dates[parseInt($( "#slider-range" ).slider( "values", 1 ))];
+			$( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
+		});
+	</script>
 
 </head>
 
@@ -19,15 +67,15 @@
 <body>
 
 
-	
+	<!-- Top Bar -->
 	<div id="top-bar">
 		<div class="wrap">				
 				<a href="./"><img style="float:left;padding-right:20px;" src="./images/nyc_white_charts.png"></a>
 		
 				<ul class="nav">
-					<li class="menu-item"><a href="./dashboard/">One</a></li>
-					<li class="menu-item"><a href="./pictures/">Two</a></li>
-					<li class="menu-item"><a href="/storage/">Three</a></li>
+					<li class="menu-item"><a href="">One</a></li>
+					<li class="menu-item"><a href="">Two</a></li>
+					<li class="menu-item"><a href="">Three</a></li>
 					<li class="menu-item"><a href="">Four</a></li>
 					<li class="menu-item"><a href="">Five</a></li>
 					<li class="menu-item-last"><a href="">Six</a></li>					
@@ -44,11 +92,39 @@
 		
 		</div>
 	</div>
-	
-	
+
+
+	<!-- Dahboard Container -->
 	<div id="container">
 	
+		<!-- Page -->
 		<div class="page">
+
+
+			<!-- Top of the page -->
+			<div style="margin-bottom:50px">
+				<div style="float:left;"><img src="./images/City-New-York--Seal.png" height="120"/></div>
+				<div style="float:right;"><img src="./images/nypd-logo.png" height="120"/></div>
+				<div style="margin:0 auto;"><h1><center>Police Department <br /> City of New York</center></h1></div>
+			</div>
+
+
+			<!-- Slider Container -->
+			<div id="slider-container">
+				<div id="slider-text">
+					<center>
+						<label for="amount">Report Covering the Date Range:</label>
+						<input type="text" id="date-range" readonly style="border:0; color:#f6931f; font-weight:bold;" size="30">
+					</center>
+				</div>
+
+				<div id="slider-range"></div> 
+			</div> 
+
+			<br /><br />
+
+
+			<!-- Sparklines -->
 			<div id="sparkline1" class="sparkline"><p>Number of Persons Injured</p></div>
 			<div id="sparkline2" class="sparkline"><p>Number of Persons Killed</p></div>
 			<div id="sparkline3" class="sparkline"><p>Number of Motorists Injured</p></div>
@@ -57,6 +133,7 @@
 			<div id="sparkline6" class="sparkline"><p>Number of Cyclists Killed</p></div>
 			<div id="sparkline7" class="sparkline"><p>Number of Pedestrians Injured</p></div>
 			<div id="sparkline8" class="sparkline"><p>Number of Pedestrians Killed</p></div>
+
 		</div>				
 			
 	</div>
