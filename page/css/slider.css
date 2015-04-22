@@ -1,0 +1,22 @@
+#slider-container{
+	width: 100%
+	margin: 200px;
+}
+
+#slider-text{
+  font-family: "Trebuchet MS", "Helvetica", "Arial", "Verdana", "sans-serif";
+  font-size: 80.5%;
+  width: 100%;
+}
+
+#slider-range{
+	width: 97%;
+	margin: 10px;
+}
+
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+}
