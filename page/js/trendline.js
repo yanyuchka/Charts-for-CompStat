@@ -10,10 +10,10 @@
 //  GLOBALS
 //------------------------//
 var sparkline = {
-  top: 10,
-  right: 10,
+  top: 0,
+  right: 0,
   bottom: 0,
-  left: 10,
+  left: 0,
   width: null,
   height: null,  
   dataset: null,
@@ -22,14 +22,25 @@ var sparkline = {
 };
 
 sparkline.width = 150
-sparkline.height = 50
+sparkline.height = 70
 sparkline.dataset = [];
+
+
+
+var dateslider = {
+  draw: null,
+  dateArray: null,
+  indexLow: null,
+  indexHigh: null,
+}
+
+dateslider.dateArray = [];
+
+
 
 
 var parseDate = d3.time.format("%Y-%m-%d").parse;
 
-
-var dateArray = [];
 
 //------------------------//
 //  CSV ENCODING
@@ -40,18 +51,22 @@ d3.csv("./csv/collisions.csv",
 
                   sparkline.dataset.push({
                     date: parseDate(d.DATE),
-                    unparseddate: d.DATE,
                     all_collisions: +d.ALL_COLLISIONS,
                     injury_collisions: +d.INJURY_COLLISIONS,
                     fatal_collisions: +d.FATAL_COLLISIONS,
                   })
-
-                  dateArray.push(d.DATE);
+                  // Add the dates to its own array for the timeline slider
+                  dateslider.dateArray.push(d.DATE);
             });
 
             
             console.log("Done Loading.");
-            timeSlider();
+            // Set up the slider
+            dateslider.draw();
+            dateslider.indexLow = 0;
+            dateslider.indexHigh = sparkline.dataset.length-1;
+
+            // Initial draw
             sparkline.redraw();
             
         });
@@ -82,7 +97,7 @@ sparkline.redraw = function(){
 //  DRAW THE SPARKLINE
 //------------------------//
 sparkline.draw = function(id, attribute){
-  console.log("Drawing: " + attribute);
+  // console.log("Drawing: " + attribute);
 
   // Domain with y inverted
   var x = d3.scale.linear().range([0, sparkline.width]);
@@ -95,11 +110,7 @@ sparkline.draw = function(id, attribute){
       .y(function(d) { return y(d[attribute]); });
 
 
-  // Updated the input domains based on the data  
-  // x.domain(d3.extent(sparkline.dataset, function(d) { return d.date; }));
-
-
-
+  // Set up the domain based on the date slider
   x.domain(d3.extent( [parseDate(tMin), parseDate(tMax)] ));
   y.domain([0, d3.max(sparkline.dataset, function(d) { return d[attribute]; })]);  
 
@@ -111,10 +122,14 @@ sparkline.draw = function(id, attribute){
         .append("g")
         .attr("transform", "translate(" + sparkline.left + "," + sparkline.top + ")");
 
+  var trendcolor = (sparkline.dataset[dateslider.indexLow][attribute] >= sparkline.dataset[dateslider.indexHigh][attribute]) ? "sparkline decreasing" : "sparkline increasing";
+  console.log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute]);  
+  console.log("indexHigh: " + dateslider.indexHigh);
+  
   // Draw the spark line
   svg.append("path")
       .datum(sparkline.dataset)
-      .attr("class", "sparkline")
+      .attr("class", trendcolor)
       .attr("d", line);
 }
 
@@ -126,25 +141,34 @@ sparkline.draw = function(id, attribute){
 //------------------------//
 //  TIME SLIDER
 //------------------------//
-function timeSlider(){
+dateslider.draw = function(){
   $(function() {
       $( "#slider-range" ).slider({
         range: true,
         min: 0,
-        max: dateArray.length-1,
-        values: [ 0, dateArray.length-1 ],
+        max: dateslider.dateArray.length-1,
+        values: [ 0, dateslider.dateArray.length ],
+        
         slide: function( event, ui ) {
-          tMin = dateArray[parseInt(ui.values[0])];
-          tMax = dateArray[parseInt(ui.values[1])];
+          tMin = dateslider.dateArray[parseInt(ui.values[0])];
+          tMax = dateslider.dateArray[parseInt(ui.values[1])];
+          // console.log(ui.values[1] + " " + dateslider.dateArray[parseInt(ui.values[1])]);
+
+          // Index numbers to compare the current trend
+          // Used to adjust the color of green or red
+          dateslider.indexLow = parseInt(ui.values[0]);
+          dateslider.indexHigh = parseInt(ui.values[1]);
+        
           $( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
+          
+          // Draw after all calculations
           sparkline.redraw();
         }
-      });
-      tMin = dateArray[parseInt($( "#slider-range" ).slider( "values", 0 ))];
-      tMax = dateArray[parseInt($( "#slider-range" ).slider( "values", 1 ))];
-      $( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
 
-      // $( "#slider-range" ).on( "slidechange", function( event, ui ) {} );
+      });
+      tMin = dateslider.dateArray[parseInt($( "#slider-range" ).slider( "values", 0 ))];
+      tMax = dateslider.dateArray[parseInt($( "#slider-range" ).slider( "values", 1 ))];
+      $( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
 
     });
 }
