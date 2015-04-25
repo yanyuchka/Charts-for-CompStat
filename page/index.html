@@ -19,47 +19,6 @@
 	<meta name="Description" content="" />
 
 
-	<!-- Test time for the slider -->
-	<!-- FOR DEBUGGING ONLY -->
-	<script>
-    var dates = ["2015-01-01",
-                 "2015-01-02", 
-                 "2015-01-03",
-                 "2015-01-04",
-                 "2015-01-05",
-                 "2015-01-06",
-                 "2015-01-07",
-                 "2015-01-08",
-                 "2015-01-09",
-                 "2015-01-10",
-                 "2015-01-11",
-                 "2015-01-12",
-                 "2015-01-13",
-                 "2015-01-14",
-                 "2015-01-15"
-                 ];
-  	</script>	
-
-
-	<!-- Time Slider -->
-	<script>
-		$(function() {
-			$( "#slider-range" ).slider({
-				range: true,
-				min: 0,
-				max: dates.length-1,
-				values: [ 0, dates.length-1 ],
-				slide: function( event, ui ) {
-				tMin = dates[parseInt(ui.values[0])];
-				tMax = dates[parseInt(ui.values[1])];
-				$( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
-				}
-			});
-			tMin = dates[parseInt($( "#slider-range" ).slider( "values", 0 ))];
-			tMax = dates[parseInt($( "#slider-range" ).slider( "values", 1 ))];
-			$( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
-		});
-	</script>
 
 </head>
 
@@ -101,13 +60,6 @@
 		<div class="page">
 
 
-			<!-- Top of the page -->
-			<div style="margin-bottom:50px">
-				<div style="float:left;"><img src="./images/City-New-York--Seal.png" height="120"/></div>
-				<div style="float:right;"><img src="./images/nypd-logo.png" height="120"/></div>
-				<div style="margin:0 auto;"><h1><center>Police Department <br /> City of New York</center></h1></div>
-			</div>
-
 
 			<!-- Slider Container -->
 			<div id="slider-container">
@@ -125,21 +77,21 @@
 
 
 			<!-- Sparklines -->
-			<div id="sparkline1" class="sparkline"><p>Number of Persons Injured</p></div>
-			<div id="sparkline2" class="sparkline"><p>Number of Persons Killed</p></div>
-			<div id="sparkline3" class="sparkline"><p>Number of Motorists Injured</p></div>
-			<div id="sparkline4" class="sparkline"><p>Number of Motorists Killed</p></div>
+			<div id="sparkline1" class="sparkline"><p>All Collisions</p></div>
+			<div id="sparkline2" class="sparkline"><p>Injury Collisions</p></div>
+			<div id="sparkline3" class="sparkline"><p>Fatal Collisions</p></div>
+			<!-- <div id="sparkline4" class="sparkline"><p>Number of Motorists Killed</p></div>
 			<div id="sparkline5" class="sparkline"><p>Number of Cyclists Injured</p></div>
 			<div id="sparkline6" class="sparkline"><p>Number of Cyclists Killed</p></div>
 			<div id="sparkline7" class="sparkline"><p>Number of Pedestrians Injured</p></div>
-			<div id="sparkline8" class="sparkline"><p>Number of Pedestrians Killed</p></div>
+			<div id="sparkline8" class="sparkline"><p>Number of Pedestrians Killed</p></div> -->
 
 		</div>				
 			
 	</div>
 
 	<script src="http://d3js.org/d3.v3.js"></script>
-	<script src="./js/sparkline.js"></script> 	
+	<script src="./js/trendline.js"></script> 	
 
 </body>
 </html>
