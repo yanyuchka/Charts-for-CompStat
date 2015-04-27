@@ -26,7 +26,7 @@ sparkline.dataset = [];
 //------------------------//
 //  CSV ENCODING
 //------------------------//
-d3.csv("./csv/735rows_crashdata.csv",
+d3.csv("../data/crashdata.csv",
         function(error, data) {
             var newdate;            
             data.forEach(function(d,i) {
