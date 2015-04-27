@@ -1,5 +1,13 @@
 .sparkline {
-  fill: none;
-  stroke: #000;
-  stroke-width: 0.5px;
+	fill: none;
+	stroke-width: 1.5px;
+}
+
+.decreasing {
+ 	stroke: #0a0;
+}
+
+
+.increasing {
+	stroke: #a00;
 }

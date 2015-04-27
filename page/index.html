@@ -5,13 +5,20 @@
 	<link rel="stylesheet" type="text/css" href="./css/layout1.css" />
 	<link rel="stylesheet" type="text/css" href="./css/topbar.css" />
 	<link rel="stylesheet" type="text/css" href="./css/global.css" />
+	<link rel="stylesheet" type="text/css" href="./css/slider.css" />
 
 	<link rel="stylesheet" type="text/css" href="./css/sparkline.css">  
   	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
   	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+
+
 	<meta name="Keywords" content="Charts-for-CompStat" />
 	<meta name="Description" content="" />
+
+
 
 </head>
 
@@ -19,15 +26,15 @@
 <body>
 
 
-	
+	<!-- Top Bar -->
 	<div id="top-bar">
 		<div class="wrap">				
 				<a href="./"><img style="float:left;padding-right:20px;" src="./images/nyc_white_charts.png"></a>
 		
 				<ul class="nav">
-					<li class="menu-item"><a href="./dashboard/">One</a></li>
-					<li class="menu-item"><a href="./pictures/">Two</a></li>
-					<li class="menu-item"><a href="/storage/">Three</a></li>
+					<li class="menu-item"><a href="">One</a></li>
+					<li class="menu-item"><a href="">Two</a></li>
+					<li class="menu-item"><a href="">Three</a></li>
 					<li class="menu-item"><a href="">Four</a></li>
 					<li class="menu-item"><a href="">Five</a></li>
 					<li class="menu-item-last"><a href="">Six</a></li>					
@@ -44,25 +51,47 @@
 		
 		</div>
 	</div>
-	
-	
+
+
+	<!-- Dahboard Container -->
 	<div id="container">
 	
+		<!-- Page -->
 		<div class="page">
-			<div id="sparkline1" class="sparkline"><p>Number of Persons Injured</p></div>
-			<div id="sparkline2" class="sparkline"><p>Number of Persons Killed</p></div>
-			<div id="sparkline3" class="sparkline"><p>Number of Motorists Injured</p></div>
-			<div id="sparkline4" class="sparkline"><p>Number of Motorists Killed</p></div>
+
+
+
+			<!-- Slider Container -->
+			<div id="slider-container">
+				<div id="slider-text">
+					<center>
+						<label for="amount">Report Covering the Date Range:</label>
+						<input type="text" id="date-range" readonly style="border:0; color:#f6931f; font-weight:bold;" size="30">
+					</center>
+				</div>
+
+				<div id="slider-range"></div> 
+			</div> 
+
+			<br /><br />
+
+
+			<!-- Sparklines -->
+			<div id="sparkline1" class="sparkline"><p>All Collisions</p></div>
+			<div id="sparkline2" class="sparkline"><p>Injury Collisions</p></div>
+			<div id="sparkline3" class="sparkline"><p>Fatal Collisions</p></div>
+			<!-- <div id="sparkline4" class="sparkline"><p>Number of Motorists Killed</p></div>
 			<div id="sparkline5" class="sparkline"><p>Number of Cyclists Injured</p></div>
 			<div id="sparkline6" class="sparkline"><p>Number of Cyclists Killed</p></div>
 			<div id="sparkline7" class="sparkline"><p>Number of Pedestrians Injured</p></div>
-			<div id="sparkline8" class="sparkline"><p>Number of Pedestrians Killed</p></div>
+			<div id="sparkline8" class="sparkline"><p>Number of Pedestrians Killed</p></div> -->
+
 		</div>				
 			
 	</div>
 
 	<script src="http://d3js.org/d3.v3.js"></script>
-	<script src="./js/sparkline.js"></script> 	
+	<script src="./js/trendline.js"></script> 	
 
 </body>
 </html>
