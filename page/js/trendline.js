@@ -35,12 +35,14 @@ var dateslider = {
   indexLowNumber: null,
   indexHighNumber: null,
   dateselector: 0,
+  rangerange: 0,
   rangeweek: 7,
   range28day: 28,
   rangeyear: 365,
+  initButtons: null,
 }
 
-dateslider.dateselector = dateslider.rangeyear;
+// dateslider.dateselector = dateslider.rangeyear;
 dateslider.dateArray = [];
 
 var barchart = {
@@ -174,6 +176,13 @@ sparkline.draw = function(id, attribute){
   var x = d3.scale.linear().range([0, sparkline.width]);
   var y = d3.scale.linear().range([sparkline.height, 0]);
 
+  // var tip = d3.tip()
+  //   .attr('class', 'd3-tip')
+  //   .offset([-10, 0])
+  //   .html(function(d) {
+  //     return "<strong>Frequency:</strong> <span style='color:red'>" + d.frequency + "</span>";
+  // })
+
   // Create the line 
   var line = d3.svg.line()
       .interpolate("basis")
@@ -193,6 +202,9 @@ sparkline.draw = function(id, attribute){
         .append("g")
         .attr("transform", "translate(" + sparkline.left + "," + sparkline.top + ")");
 
+  // Tooltip
+  // svg.call(tip);
+
   var trendcolor = (sparkline.dataset[dateslider.indexLow][attribute] >= sparkline.dataset[dateslider.indexHigh][attribute]) ? "sparkline decreasing" : "sparkline increasing";
   // console.log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute]);  
   // console.log("indexHigh: " + dateslider.indexHigh);
@@ -202,6 +214,8 @@ sparkline.draw = function(id, attribute){
       .datum(sparkline.dataset)
       .attr("class", trendcolor)
       .attr("d", line);
+      // .on('mouseover', tip.show)
+      // .on('mouseout', tip.hide);
 }
 
 
@@ -251,16 +265,59 @@ dateslider.draw = function(){
         }
 
       });
+
+      // Run once. Initial values displayed
       tMin = dateslider.dateArray[parseInt($( "#slider-range" ).slider( "values", 0 ))];
       tMax = dateslider.dateArray[parseInt($( "#slider-range" ).slider( "values", 1 ))];
       $( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
+
+      // Initialize the buttons
+      dateslider.initButtons();
 
     });
 }
 
 
+//------------------------//
+//  TIME SLIDER BUTTONS
+//------------------------//
+dateslider.initButtons = function()
+{
+  $( "#btn-range" ).click(function() { 
+    dateslider.dateselector = dateslider.rangerange;
+    $(this).css('color', 'orange');
+    $("#btn-28day").css('color', 'black');
+    $("#btn-week").css('color', 'black');
+    $("#btn-year").css('color', 'black');
+  });
 
+  $( "#btn-week" ).click(function() { 
+    $( "#slider-range" ).slider( "option", "values", [0,$( "#slider-range" ).slider( "values", 1 )] );
+    dateslider.dateselector = dateslider.rangeweek;
+    $(this).css('color', 'orange');
+    $("#btn-28day").css('color', 'black');
+    $("#btn-year").css('color', 'black');
+    $("#btn-range").css('color', 'black');
+  });
 
+  $( "#btn-28day" ).click(function() { 
+    $( "#slider-range" ).slider( "option", "values", [0,$( "#slider-range" ).slider( "values", 1 )] );
+    dateslider.dateselector = dateslider.range28day;
+    $(this).css('color', 'orange');
+    $("#btn-week").css('color', 'black');
+    $("#btn-year").css('color', 'black');
+    $("#btn-range").css('color', 'black');
+  });
+
+  $( "#btn-year" ).click(function() { 
+    $( "#slider-range" ).slider( "option", "values", [0,$( "#slider-range" ).slider( "values", 1 )] );
+    dateslider.dateselector = dateslider.rangeyear;
+    $(this).css('color', 'orange');
+    $("#btn-28day").css('color', 'black');
+    $("#btn-week").css('color', 'black');
+    $("#btn-range").css('color', 'black');
+  });
+}
 
 
 
