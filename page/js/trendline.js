@@ -36,6 +36,7 @@ var dateslider = {
   indexHighNumber: null,
   dateselector: 0,
   rangerange: 0,
+  rangeday: 1,
   rangeweek: 7,
   range28day: 28,
   rangeyear: 365,
@@ -286,6 +287,17 @@ dateslider.initButtons = function()
   $( "#btn-range" ).click(function() { 
     dateslider.dateselector = dateslider.rangerange;
     $(this).css('color', 'orange');
+    $("#btn-day").css('color', 'black');
+    $("#btn-28day").css('color', 'black');
+    $("#btn-week").css('color', 'black');
+    $("#btn-year").css('color', 'black');
+  });
+
+  $( "#btn-day" ).click(function() { 
+    $( "#slider-range" ).slider( "option", "values", [0,$( "#slider-range" ).slider( "values", 1 )] );
+    dateslider.dateselector = dateslider.rangeday;
+    $(this).css('color', 'orange');
+    $("#btn-range").css('color', 'black');
     $("#btn-28day").css('color', 'black');
     $("#btn-week").css('color', 'black');
     $("#btn-year").css('color', 'black');
@@ -295,6 +307,7 @@ dateslider.initButtons = function()
     $( "#slider-range" ).slider( "option", "values", [0,$( "#slider-range" ).slider( "values", 1 )] );
     dateslider.dateselector = dateslider.rangeweek;
     $(this).css('color', 'orange');
+    $("#btn-day").css('color', 'black');
     $("#btn-28day").css('color', 'black');
     $("#btn-year").css('color', 'black');
     $("#btn-range").css('color', 'black');
@@ -304,6 +317,7 @@ dateslider.initButtons = function()
     $( "#slider-range" ).slider( "option", "values", [0,$( "#slider-range" ).slider( "values", 1 )] );
     dateslider.dateselector = dateslider.range28day;
     $(this).css('color', 'orange');
+    $("#btn-day").css('color', 'black');
     $("#btn-week").css('color', 'black');
     $("#btn-year").css('color', 'black');
     $("#btn-range").css('color', 'black');
@@ -313,6 +327,7 @@ dateslider.initButtons = function()
     $( "#slider-range" ).slider( "option", "values", [0,$( "#slider-range" ).slider( "values", 1 )] );
     dateslider.dateselector = dateslider.rangeyear;
     $(this).css('color', 'orange');
+    $("#btn-day").css('color', 'black');
     $("#btn-28day").css('color', 'black');
     $("#btn-week").css('color', 'black');
     $("#btn-range").css('color', 'black');
