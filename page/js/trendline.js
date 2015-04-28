@@ -34,8 +34,13 @@ var dateslider = {
   indexHigh: null,
   indexLowNumber: null,
   indexHighNumber: null,
+  dateselector: 0,
+  rangeweek: 7,
+  range28day: 28,
+  rangeyear: 365,
 }
 
+dateslider.dateselector = dateslider.rangeyear;
 dateslider.dateArray = [];
 
 var barchart = {
@@ -216,6 +221,16 @@ dateslider.draw = function(){
         values: [ 0, dateslider.dateArray.length ],
         
         slide: function( event, ui ) {
+
+          // Lock in the lower value so that it doesn't go less then zero
+          if(dateslider.dateselector > 0){
+            if(ui.values[1]>dateslider.dateselector){
+              // Make the lower value either 7 days, 28 days or 365 days less than the high value
+              ui.values[0] = ui.values[1] - dateslider.dateselector;
+            }
+          }
+
+
           tMin = dateslider.dateArray[parseInt(ui.values[0])];
           tMax = dateslider.dateArray[parseInt(ui.values[1])];
           // console.log(ui.values[1] + " " + dateslider.dateArray[parseInt(ui.values[1])]);
