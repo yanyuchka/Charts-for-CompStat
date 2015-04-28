@@ -45,18 +45,24 @@ var parseDate = d3.time.format("%Y-%m-%d").parse;
 //------------------------//
 //  CSV ENCODING
 //------------------------//
-d3.csv("./csv/collisions.csv",
+d3.csv("./csv/crash_75pct_daily.csv",
         function(error, data) {            
             data.forEach(function(d,i) {
-
                   sparkline.dataset.push({
-                    date: parseDate(d.DATE),
-                    all_collisions: +d.ALL_COLLISIONS,
-                    injury_collisions: +d.INJURY_COLLISIONS,
-                    fatal_collisions: +d.FATAL_COLLISIONS,
+                    precinct: +d.precinct,
+                    date: parseDate(d.date),
+                    all_collisions: +d.all_collisions,
+                    injury_collisions: +d.injury_collisions,
+                    fatal_collisions: +d.fatal_collisions,
+                    injures: +d.injures,
+                    fatalities: +d.fatalities,
+                    cyclists_involved: +d.cyclists_involved,
+                    pedestrians_involved: +d.pedestrians_involved,
+                    year: +d.year,
+                    week: +d.week,
                   })
                   // Add the dates to its own array for the timeline slider
-                  dateslider.dateArray.push(d.DATE);
+                  dateslider.dateArray.push(d.date);
             });
 
             
@@ -83,14 +89,12 @@ sparkline.redraw = function(){
   sparkline.draw("#sparkline1","all_collisions");
   sparkline.draw("#sparkline2","injury_collisions");
   sparkline.draw("#sparkline3","fatal_collisions");
-  // sparkline.draw("#sparkline4","number_of_motorist_killed");
-  // sparkline.draw("#sparkline5","number_of_cyclist_injured");
-  // sparkline.draw("#sparkline6","number_of_cyclist_killed");
-  // sparkline.draw("#sparkline7","number_of_pedestrians_injured");
+  sparkline.draw("#sparkline4","injures");
+  sparkline.draw("#sparkline5","fatalities");
+  sparkline.draw("#sparkline6","cyclists_involved");
+  sparkline.draw("#sparkline7","pedestrians_involved");
   // sparkline.draw("#sparkline8","number_of_pedestrians_killed");
 }
-
-
 
 
 //------------------------//
