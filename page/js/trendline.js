@@ -34,6 +34,7 @@ var dateslider = {
   indexHigh: null,
   indexLowNumber: null,
   indexHighNumber: null,
+  rangeselector: 0,
 }
 
 dateslider.dateArray = [];
@@ -42,8 +43,6 @@ var barchart = {
   contributing_factors: [],
   redraw: null,
 }
-
-
 
 
 var parseDate = d3.time.format("%Y-%m-%d").parse;
@@ -189,8 +188,6 @@ sparkline.draw = function(id, attribute){
         .attr("transform", "translate(" + sparkline.left + "," + sparkline.top + ")");
 
   var trendcolor = (sparkline.dataset[dateslider.indexLow][attribute] >= sparkline.dataset[dateslider.indexHigh][attribute]) ? "sparkline decreasing" : "sparkline increasing";
-  // console.log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute]);  
-  // console.log("indexHigh: " + dateslider.indexHigh);
   
   // Draw the spark line
   svg.append("path")
@@ -216,6 +213,13 @@ dateslider.draw = function(){
         values: [ 0, dateslider.dateArray.length ],
         
         slide: function( event, ui ) {
+
+          
+          if(dateslider.rangeselector > 0){
+            ui.values[0] = ui.values[1] - rangeselector;
+          }
+          
+
           tMin = dateslider.dateArray[parseInt(ui.values[0])];
           tMax = dateslider.dateArray[parseInt(ui.values[1])];
           // console.log(ui.values[1] + " " + dateslider.dateArray[parseInt(ui.values[1])]);
@@ -225,6 +229,8 @@ dateslider.draw = function(){
           dateslider.indexLow = parseInt(ui.values[0]);
           dateslider.indexHigh = parseInt(ui.values[1]);
 
+          // We can combine this with the top variables if we want to
+          // These were needed after the above
           dateslider.indexLowNumber = ui.values[0];
           dateslider.indexHighNumber = ui.values[1];
         
@@ -236,11 +242,13 @@ dateslider.draw = function(){
         }
 
       });
+      // Run once after setup.  Display the initial values
       tMin = dateslider.dateArray[parseInt($( "#slider-range" ).slider( "values", 0 ))];
       tMax = dateslider.dateArray[parseInt($( "#slider-range" ).slider( "values", 1 ))];
       $( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
 
     });
+
 }
 
 
@@ -282,7 +290,7 @@ barchart.redraw = function(){
       barHeight        = 7,
       groupHeight      = barHeight,
       gapBetweenGroups = 6,
-      spaceForLabels   = 250;
+      spaceForLabels   = 260;
 
   // Zip the series data together (first values, second values, etc.)
   var zippedData = [];
@@ -296,7 +304,7 @@ barchart.redraw = function(){
 
   var x = d3.scale.linear()
       .domain([0, d3.max(zippedData)])
-      .range([0, chartWidth-20]);
+      .range([0, chartWidth-40]);
 
   var y = d3.scale.linear()
       .range([chartHeight + gapBetweenGroups, 0]);
