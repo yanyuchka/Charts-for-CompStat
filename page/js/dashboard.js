@@ -154,11 +154,6 @@ sparkline.redraw = function(){
   sparkline.draw("#sparkline1","all_collisions");
   sparkline.draw("#sparkline2","injury_collisions");
   sparkline.draw("#sparkline3","fatal_collisions");
-  // sparkline.draw("#sparkline4","");
-  // sparkline.draw("#sparkline5","number_of_cyclist_injured");
-  // sparkline.draw("#sparkline6","number_of_cyclist_killed");
-  // sparkline.draw("#sparkline7","number_of_pedestrians_injured");
-  // sparkline.draw("#sparkline8","number_of_pedestrians_killed");
 }
 
 
@@ -185,8 +180,11 @@ sparkline.draw = function(id, attribute){
   // })
 
   // Create the line 
+  // Changed the line to linear because basis distorted the ends and made it difficult
+  // to see the difference from high and low comparing numbers
+  // https://github.com/mbostock/d3/wiki/SVG-Shapes#line_interpolate
   var line = d3.svg.line()
-      .interpolate("basis")
+      .interpolate("linear")
       .x(function(d) { return x(d.date); })
       .y(function(d) { return y(d[attribute]); });
 
@@ -207,7 +205,7 @@ sparkline.draw = function(id, attribute){
   // svg.call(tip);
 
   var trendcolor = (sparkline.dataset[dateslider.indexLow][attribute] >= sparkline.dataset[dateslider.indexHigh][attribute]) ? "sparkline decreasing" : "sparkline increasing";
-  // console.log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute]);  
+  console.log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute]);  
   // console.log("indexHigh: " + dateslider.indexHigh);
   
   // Draw the spark line
@@ -346,20 +344,23 @@ barchart.redraw = function(){
   // console.log("drawBars()");
  
 
-  var data = {
-    // labels: ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','Unspecified','View Obstructed/Limited','Windshield Inadequate']
-    labels: ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','View Obstructed/Limited','Windshield Inadequate']
-  };
+  // labels without 'Unspecified'
+  var labels = ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','View Obstructed/Limited','Windshield Inadequate'];
+  
+  // labels with 'Unspecified'
+  // var data = ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','Unspecified','View Obstructed/Limited','Windshield Inadequate']
 
+  // Contributing factors values array
   values = []
-  // Initialize with zeros
-  for(var i=0; i<data.labels.length; i++){
+  
+  // Initialize all values with with zeros for redraw
+  for(var i = 0; i < labels.length; i++){
     values.push(0);
   }
 
-  // Add the factors
+  // Add the Contributing Factors
   for(var i1 = dateslider.indexLowNumber; i1 <= dateslider.indexHighNumber; i1++){
-    for (var i2=0; i2<data.labels.length; i2++) {
+    for (var i2=0; i2<labels.length; i2++) {
       values[i2] += sparkline.dataset[i1].contributing_factors[i2].value 
     }
   }
@@ -373,13 +374,11 @@ barchart.redraw = function(){
 
   // Zip the series data together (first values, second values, etc.)
   var zippedData = [];
-  for (var i=0; i<data.labels.length; i++) {
+  for (var i=0; i<labels.length; i++) {
     zippedData.push(values[i]);
   }
 
-  // Color scale
-  var color = d3.scale.category20();
-  var chartHeight = barHeight * zippedData.length + gapBetweenGroups * data.labels.length;
+  var chartHeight = barHeight * zippedData.length + gapBetweenGroups * labels.length;
 
   var x = d3.scale.linear()
       .domain([0, d3.max(zippedData)])
@@ -406,15 +405,15 @@ barchart.redraw = function(){
       .data(zippedData)
       .enter().append("g")
       .attr("transform", function(d, i) {
-        return "translate(" + spaceForLabels + "," + (i * barHeight + gapBetweenGroups * (0.5 + Math.floor(i/1))) + ")";
+        return "translate(" + spaceForLabels + "," + (i * barHeight + gapBetweenGroups * (0.5 + i)) + ")";
       });
 
   // Create rectangles of the correct width
   bar.append("rect")
-      .attr("fill", function(d,i) { return color(i % 1); })
+      .attr("fill", "steelblue" )
       .attr("class", "bar")
       .attr("width", x)
-      .attr("height", barHeight - 1);
+      .attr("height", barHeight);
 
   // Add text label in bar
   bar.append("text")
@@ -430,11 +429,7 @@ barchart.redraw = function(){
       .attr("x", function(d) { return - 10; })
       .attr("y", groupHeight / 2)
       .attr("dy", ".35em")
-      .text(function(d,i) {
-        if (i % 1 === 0)
-          return data.labels[Math.floor(i/1)];
-        else
-          return ""});
+      .text(function(d,i) {return labels[i]});
 
   chart.append("g")
         .attr("class", "y axis")
