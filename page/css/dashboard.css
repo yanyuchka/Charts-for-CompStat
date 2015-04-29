@@ -5,13 +5,13 @@
 }
 
 #dashboard-page{
-	float: right;
+	/*float: right;*/
 	margin-left: auto;
 	margin-right: auto;
 	padding: 30px;
 	background-color: #FFF;
-	width: 790px;
-	height: 850px;
+	width: 1000px;
+	height: 800px;
 	border: 1px solid #FFF;
 	box-shadow: -1px 40px 40px rgba(1,1,1,0.8);
 }

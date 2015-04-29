@@ -21,8 +21,8 @@ var sparkline = {
   redraw: null,
 };
 
-sparkline.width = 740;
-sparkline.height = 150;
+sparkline.width = 100;
+sparkline.height = 25;
 sparkline.dataset = [];
 
 
@@ -135,7 +135,7 @@ d3.csv("./csv/collisions.csv",
 
             // Initial draw
             sparkline.redraw();
-            barchart.redraw();
+            // barchart.redraw();
             
         });
 
@@ -169,11 +169,7 @@ sparkline.draw = function(id, attribute){
   // console.log("Drawing: " + attribute);
 
   // Domain with y inverted
-  // var x = d3.scale.linear().range([0, sparkline.width]);
-  // var y = d3.scale.linear().range([sparkline.height, 0]);
-
-
-  var x = d3.time.scale().range([0, sparkline.width]);
+  var x = d3.scale.linear().range([0, sparkline.width]);
   var y = d3.scale.linear().range([sparkline.height, 0]);
 
   var xAxis = d3.svg.axis()
@@ -263,7 +259,7 @@ dateslider.draw = function(){
           
           // Draw after all calculations
           sparkline.redraw();
-          barchart.redraw();
+          //barchart.redraw();
         }
 
       });
