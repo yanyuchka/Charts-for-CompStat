@@ -1,8 +1,3 @@
-//---------------------------------------------------------//
-//  TREND LINES
-//  filename: trendline.js
-//---------------------------------------------------------//
-
 
 //------------------------//
 //  GLOBALS
@@ -59,94 +54,95 @@ var parseDate = d3.time.format("%Y-%m-%d").parse;
 //  CSV ENCODING
 //------------------------//
 d3.csv("./csv/collisions.csv",
-        function(error, data) {            
-            data.forEach(function(d,i) {
-                  sparkline.dataset.push({
-                    // precinct: +d.precinct, // TODO
-                    date: parseDate(d.date),
-                    
-                    all_collisions: +d.all_collisions,
-                    injury_collisions: +d.injury_collisions,
-                    fatal_collisions: +d.fatal_collisions,
+  function(error, data) {            
+      data.forEach(function(d,i) {
+        sparkline.dataset.push({
+          // precinct: +d.precinct, // TODO
+          date: parseDate(d.date),
+          
+          all_collisions: +d.all_collisions,
+          injury_collisions: +d.injury_collisions,
+          fatal_collisions: +d.fatal_collisions,
 
-                    injures: +d.injures,
-                    fatalities: +d.fatalities,
-                    cyclists_involved: +d.cyclists_involved,
-                    pedestrians_involved: +d.pedestrians_involved,
-                    
-                    // year: +d.year, // TODO
-                    // week: +d.week, // TODO
+          // injures: +d.injures,
+          // fatalities: +d.fatalities,
+          // cyclists_involved: +d.cyclists_involved,
+          // pedestrians_involved: +d.pedestrians_involved,
+          
+          // year: +d.year, // TODO
+          // week: +d.week, // TODO
 
-                    /* Contributing Factor Types
-                      contributing_factors : [
-                      { 'value' : +d.accelerator_defective, 'isDraw' : true },
-                      { 'value' : +d.aggressive_driving_road_rage, 'isDraw' : true },
-                      { 'value' : +d.alcohol_involvement, 'isDraw' : true },
-                      { 'value' : +d.animals_action, 'isDraw' : true },
-                      { 'value' : +d.backing_unsafely, 'isDraw' : true },
-                      { 'value' : +d.brakes_defective, 'isDraw' : true },
-                      { 'value' : +d.cell_phone_hand_held, 'isDraw' : true },
-                      { 'value' : +d.cell_phone_hands_free, 'isDraw' : true },
-                      { 'value' : +d.driver_inattention_distraction, 'isDraw' : true },
-                      { 'value' : +d.driver_inexperience, 'isDraw' : true },
-                      { 'value' : +d.drugs_illegal, 'isDraw' : true },
-                      { 'value' : +d.failure_to_keep_right, 'isDraw' : true },
-                      { 'value' : +d.failure_to_yield_right_of_way, 'isDraw' : true },
-                      { 'value' : +d.fatigued_drowsy, 'isDraw' : true },
-                      { 'value' : +d.fell_asleep, 'isDraw' : true },
-                      { 'value' : +d.following_too_closely, 'isDraw' : true },
-                      { 'value' : +d.glare, 'isDraw' : true },
-                      { 'value' : +d.headlights_defective, 'isDraw' : true },
-                      { 'value' : +d.illness, 'isDraw' : true },
-                      { 'value' : +d.lane_marking_improper_inadequate, 'isDraw' : true },
-                      { 'value' : +d.lost_consciousness, 'isDraw' : true },
-                      { 'value' : +d.obstruction_debris, 'isDraw' : true },
-                      { 'value' : +d.other_electronic_device, 'isDraw' : true },
-                      { 'value' : +d.other_lighting_defects, 'isDraw' : true },
-                      { 'value' : +d.other_vehicular, 'isDraw' : true },
-                      { 'value' : +d.outside_car_distraction, 'isDraw' : true },
-                      { 'value' : +d.oversized_vehicle, 'isDraw' : true },
-                      { 'value' : +d.passenger_distraction, 'isDraw' : true },
-                      { 'value' : +d.passing_or_lane_usage_improper, 'isDraw' : true },
-                      { 'value' : +d.pavement_defective, 'isDraw' : true },
-                      { 'value' : +d.pavement_slippery, 'isDraw' : true },
-                      { 'value' : +d.pedestrian_bicyclist_other_pedestrian_error_confusion, 'isDraw' : true },
-                      { 'value' : +d.physical_disability, 'isDraw' : true },
-                      { 'value' : +d.prescription_medication, 'isDraw' : true },
-                      { 'value' : +d.reaction_to_other_uninvolved_vehicle, 'isDraw' : true },
-                      { 'value' : +d.shoulders_defective_improper, 'isDraw' : true },
-                      { 'value' : +d.steering_failure, 'isDraw' : true },
-                      { 'value' : +d.tire_failure_inadequate, 'isDraw' : true },
-                      { 'value' : +d.tow_hitch_defective, 'isDraw' : true },
-                      { 'value' : +d.traffic_control_device_improper_non_working, 'isDraw' : true },
-                      { 'value' : +d.traffic_control_disregarded, 'isDraw' : true },
-                      { 'value' : +d.turning_improperly, 'isDraw' : true },
-                      { 'value' : +d.unsafe_lane_changing, 'isDraw' : true },
-                      { 'value' : +d.unsafe_speed, 'isDraw' : true },
-                      // { 'value' : +d.unspecified, 'isDraw' : true },
-                      { 'value' : +d.view_obstructed_limited, 'isDraw' : true },
-                      { 'value' : +d.windshield_inadequate, 'isDraw' : true }]*/
-                    // contributing_factors : [+d.accelerator_defective,+d.aggressive_driving_road_rage,+d.alcohol_involvement,+d.animals_action,+d.backing_unsafely,+d.brakes_defective,+d.cell_phone_hand_held,+d.cell_phone_hands_free,+d.driver_inattention_distraction,+d.driver_inexperience,+d.drugs_illegal,+d.failure_to_keep_right,+d.failure_to_yield_right_of_way,+d.fatigued_drowsy,+d.fell_asleep,+d.following_too_closely,+d.glare,+d.headlights_defective,+d.illness,+d.lane_marking_improper_inadequate,+d.lost_consciousness,+d.obstruction_debris,+d.other_electronic_device,+d.other_lighting_defects,+d.other_vehicular,+d.outside_car_distraction,+d.oversized_vehicle,+d.passenger_distraction,+d.passing_or_lane_usage_improper,+d.pavement_defective,+d.pavement_slippery,+d.pedestrian_bicyclist_other_pedestrian_error_confusion,+d.physical_disability,+d.prescription_medication,+d.reaction_to_other_uninvolved_vehicle,+d.shoulders_defective_improper,+d.steering_failure,+d.tire_failure_inadequate,+d.tow_hitch_defective,+d.traffic_control_device_improper_non_working,+d.traffic_control_disregarded,+d.turning_improperly,+d.unsafe_lane_changing,+d.unsafe_speed,+d.unspecified,+d.view_obstructed_limited,+d.windshield_inadequate]
+          /* Contributing Factor Types
+            contributing_factors : [
+            { 'value' : +d.accelerator_defective, 'isDraw' : true },
+            { 'value' : +d.aggressive_driving_road_rage, 'isDraw' : true },
+            { 'value' : +d.alcohol_involvement, 'isDraw' : true },
+            { 'value' : +d.animals_action, 'isDraw' : true },
+            { 'value' : +d.backing_unsafely, 'isDraw' : true },
+            { 'value' : +d.brakes_defective, 'isDraw' : true },
+            { 'value' : +d.cell_phone_hand_held, 'isDraw' : true },
+            { 'value' : +d.cell_phone_hands_free, 'isDraw' : true },
+            { 'value' : +d.driver_inattention_distraction, 'isDraw' : true },
+            { 'value' : +d.driver_inexperience, 'isDraw' : true },
+            { 'value' : +d.drugs_illegal, 'isDraw' : true },
+            { 'value' : +d.failure_to_keep_right, 'isDraw' : true },
+            { 'value' : +d.failure_to_yield_right_of_way, 'isDraw' : true },
+            { 'value' : +d.fatigued_drowsy, 'isDraw' : true },
+            { 'value' : +d.fell_asleep, 'isDraw' : true },
+            { 'value' : +d.following_too_closely, 'isDraw' : true },
+            { 'value' : +d.glare, 'isDraw' : true },
+            { 'value' : +d.headlights_defective, 'isDraw' : true },
+            { 'value' : +d.illness, 'isDraw' : true },
+            { 'value' : +d.lane_marking_improper_inadequate, 'isDraw' : true },
+            { 'value' : +d.lost_consciousness, 'isDraw' : true },
+            { 'value' : +d.obstruction_debris, 'isDraw' : true },
+            { 'value' : +d.other_electronic_device, 'isDraw' : true },
+            { 'value' : +d.other_lighting_defects, 'isDraw' : true },
+            { 'value' : +d.other_vehicular, 'isDraw' : true },
+            { 'value' : +d.outside_car_distraction, 'isDraw' : true },
+            { 'value' : +d.oversized_vehicle, 'isDraw' : true },
+            { 'value' : +d.passenger_distraction, 'isDraw' : true },
+            { 'value' : +d.passing_or_lane_usage_improper, 'isDraw' : true },
+            { 'value' : +d.pavement_defective, 'isDraw' : true },
+            { 'value' : +d.pavement_slippery, 'isDraw' : true },
+            { 'value' : +d.pedestrian_bicyclist_other_pedestrian_error_confusion, 'isDraw' : true },
+            { 'value' : +d.physical_disability, 'isDraw' : true },
+            { 'value' : +d.prescription_medication, 'isDraw' : true },
+            { 'value' : +d.reaction_to_other_uninvolved_vehicle, 'isDraw' : true },
+            { 'value' : +d.shoulders_defective_improper, 'isDraw' : true },
+            { 'value' : +d.steering_failure, 'isDraw' : true },
+            { 'value' : +d.tire_failure_inadequate, 'isDraw' : true },
+            { 'value' : +d.tow_hitch_defective, 'isDraw' : true },
+            { 'value' : +d.traffic_control_device_improper_non_working, 'isDraw' : true },
+            { 'value' : +d.traffic_control_disregarded, 'isDraw' : true },
+            { 'value' : +d.turning_improperly, 'isDraw' : true },
+            { 'value' : +d.unsafe_lane_changing, 'isDraw' : true },
+            { 'value' : +d.unsafe_speed, 'isDraw' : true },
+            // { 'value' : +d.unspecified, 'isDraw' : true },
+            { 'value' : +d.view_obstructed_limited, 'isDraw' : true },
+            { 'value' : +d.windshield_inadequate, 'isDraw' : true }]*/
+          // contributing_factors : [+d.accelerator_defective,+d.aggressive_driving_road_rage,+d.alcohol_involvement,+d.animals_action,+d.backing_unsafely,+d.brakes_defective,+d.cell_phone_hand_held,+d.cell_phone_hands_free,+d.driver_inattention_distraction,+d.driver_inexperience,+d.drugs_illegal,+d.failure_to_keep_right,+d.failure_to_yield_right_of_way,+d.fatigued_drowsy,+d.fell_asleep,+d.following_too_closely,+d.glare,+d.headlights_defective,+d.illness,+d.lane_marking_improper_inadequate,+d.lost_consciousness,+d.obstruction_debris,+d.other_electronic_device,+d.other_lighting_defects,+d.other_vehicular,+d.outside_car_distraction,+d.oversized_vehicle,+d.passenger_distraction,+d.passing_or_lane_usage_improper,+d.pavement_defective,+d.pavement_slippery,+d.pedestrian_bicyclist_other_pedestrian_error_confusion,+d.physical_disability,+d.prescription_medication,+d.reaction_to_other_uninvolved_vehicle,+d.shoulders_defective_improper,+d.steering_failure,+d.tire_failure_inadequate,+d.tow_hitch_defective,+d.traffic_control_device_improper_non_working,+d.traffic_control_disregarded,+d.turning_improperly,+d.unsafe_lane_changing,+d.unsafe_speed,+d.unspecified,+d.view_obstructed_limited,+d.windshield_inadequate]
 
-                  })
-                  // Add the dates to its own array for the timeline slider
-                  dateslider.dateArray.push(d.date);
-            });
+        })
+        // Add the dates to its own array for the timeline slider
+        dateslider.dateArray.push(d.date);
+  });
 
-            
-            console.log("Done Loading.");
-            // Set up the slider
-            dateslider.draw();
-            dateslider.indexLow = 0;
-            dateslider.indexHigh = sparkline.dataset.length-1;
-            dateslider.indexLowNumber = 0;
-            dateslider.indexHighNumber = sparkline.dataset.length-1;
+  
+  console.log("Done Loading.");
+  // Set up the slider
+  dateslider.draw();
+  
+  dateslider.indexLow = 0;
+  dateslider.indexHigh = sparkline.dataset.length-1;
+  dateslider.indexLowNumber = 0;
+  dateslider.indexHighNumber = sparkline.dataset.length-1;
 
-            // Initial draw
-            sparkline.redraw();
-            // barchart.redraw();
-            
-        });
+  // Initial draw
+  sparkline.redraw();
+  // barchart.redraw();
+  
+});
 
 
 
@@ -163,10 +159,10 @@ sparkline.redraw = function(){
   sparkline.draw("#sparkline1","all_collisions");
   sparkline.draw("#sparkline2","injury_collisions");
   sparkline.draw("#sparkline3","fatal_collisions");
-  sparkline.draw("#sparkline4","injures");
-  sparkline.draw("#sparkline5","fatalities");
-  sparkline.draw("#sparkline6","cyclists_involved");
-  sparkline.draw("#sparkline7","pedestrians_involved");
+  // sparkline.draw("#sparkline4","injures");
+  // sparkline.draw("#sparkline5","fatalities");
+  // sparkline.draw("#sparkline6","cyclists_involved");
+  // sparkline.draw("#sparkline7","pedestrians_involved");
 }
 
 
@@ -185,13 +181,6 @@ sparkline.draw = function(id, attribute){
   var x = d3.scale.linear().range([0, sparkline.width]);
   var y = d3.scale.linear().range([sparkline.height, 0]);
 
-  var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-
-  var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left");
 
   // Create the line 
   // Changed the line to linear because basis distorted the ends and made it difficult
@@ -228,6 +217,12 @@ sparkline.draw = function(id, attribute){
       .attr("d", line);
 
 }
+
+
+
+
+
+
 
 
 
@@ -273,7 +268,7 @@ dateslider.draw = function(){
           // Draw after all calculations
           sparkline.redraw();
           //barchart.redraw();
-        }
+        } //END: Slide
 
       });
 
@@ -284,8 +279,12 @@ dateslider.draw = function(){
 
       // Initialize the buttons
       dateslider.initButtons();
-
+  });
 }// END: dateslider.draw()
+
+
+
+
 
 
 
@@ -297,8 +296,7 @@ dateslider.draw = function(){
 //------------------------//
 //  TIME SLIDER BUTTONS
 //------------------------//
-dateslider.initButtons = function()
-{
+dateslider.initButtons = function(){
   $( "#btn-range" ).click(function() { 
     dateslider.dateselector = dateslider.rangerange;
     $(this).css('color', 'orange');
