@@ -4,8 +4,6 @@
 //---------------------------------------------------------//
 
 
-
-
 //------------------------//
 //  GLOBALS
 //------------------------//
@@ -63,14 +61,24 @@ var parseDate = d3.time.format("%Y-%m-%d").parse;
 d3.csv("./csv/collisions.csv",
         function(error, data) {            
             data.forEach(function(d,i) {
-                
                   sparkline.dataset.push({
+                    // precinct: +d.precinct, // TODO
                     date: parseDate(d.date),
+                    
                     all_collisions: +d.all_collisions,
                     injury_collisions: +d.injury_collisions,
                     fatal_collisions: +d.fatal_collisions,
-                    // Contributing Factor Types
-                    contributing_factors : [
+
+                    injures: +d.injures,
+                    fatalities: +d.fatalities,
+                    cyclists_involved: +d.cyclists_involved,
+                    pedestrians_involved: +d.pedestrians_involved,
+                    
+                    // year: +d.year, // TODO
+                    // week: +d.week, // TODO
+
+                    /* Contributing Factor Types
+                      contributing_factors : [
                       { 'value' : +d.accelerator_defective, 'isDraw' : true },
                       { 'value' : +d.aggressive_driving_road_rage, 'isDraw' : true },
                       { 'value' : +d.alcohol_involvement, 'isDraw' : true },
@@ -117,8 +125,9 @@ d3.csv("./csv/collisions.csv",
                       { 'value' : +d.unsafe_speed, 'isDraw' : true },
                       // { 'value' : +d.unspecified, 'isDraw' : true },
                       { 'value' : +d.view_obstructed_limited, 'isDraw' : true },
-                      { 'value' : +d.windshield_inadequate, 'isDraw' : true }]
+                      { 'value' : +d.windshield_inadequate, 'isDraw' : true }]*/
                     // contributing_factors : [+d.accelerator_defective,+d.aggressive_driving_road_rage,+d.alcohol_involvement,+d.animals_action,+d.backing_unsafely,+d.brakes_defective,+d.cell_phone_hand_held,+d.cell_phone_hands_free,+d.driver_inattention_distraction,+d.driver_inexperience,+d.drugs_illegal,+d.failure_to_keep_right,+d.failure_to_yield_right_of_way,+d.fatigued_drowsy,+d.fell_asleep,+d.following_too_closely,+d.glare,+d.headlights_defective,+d.illness,+d.lane_marking_improper_inadequate,+d.lost_consciousness,+d.obstruction_debris,+d.other_electronic_device,+d.other_lighting_defects,+d.other_vehicular,+d.outside_car_distraction,+d.oversized_vehicle,+d.passenger_distraction,+d.passing_or_lane_usage_improper,+d.pavement_defective,+d.pavement_slippery,+d.pedestrian_bicyclist_other_pedestrian_error_confusion,+d.physical_disability,+d.prescription_medication,+d.reaction_to_other_uninvolved_vehicle,+d.shoulders_defective_improper,+d.steering_failure,+d.tire_failure_inadequate,+d.tow_hitch_defective,+d.traffic_control_device_improper_non_working,+d.traffic_control_disregarded,+d.turning_improperly,+d.unsafe_lane_changing,+d.unsafe_speed,+d.unspecified,+d.view_obstructed_limited,+d.windshield_inadequate]
+
                   })
                   // Add the dates to its own array for the timeline slider
                   dateslider.dateArray.push(d.date);
@@ -154,6 +163,10 @@ sparkline.redraw = function(){
   sparkline.draw("#sparkline1","all_collisions");
   sparkline.draw("#sparkline2","injury_collisions");
   sparkline.draw("#sparkline3","fatal_collisions");
+  sparkline.draw("#sparkline4","injures");
+  sparkline.draw("#sparkline5","fatalities");
+  sparkline.draw("#sparkline6","cyclists_involved");
+  sparkline.draw("#sparkline7","pedestrians_involved");
 }
 
 
@@ -272,8 +285,13 @@ dateslider.draw = function(){
       // Initialize the buttons
       dateslider.initButtons();
 
-    });
-}
+}// END: dateslider.draw()
+
+
+
+
+
+
 
 
 //------------------------//
@@ -434,5 +452,4 @@ barchart.redraw = function(){
         .attr("class", "y axis")
         .attr("transform", "translate(" + spaceForLabels + ", " + -gapBetweenGroups/2 + ")")
         .call(yAxis);
-
 }
