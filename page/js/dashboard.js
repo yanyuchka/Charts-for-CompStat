@@ -21,8 +21,8 @@ var sparkline = {
   redraw: null,
 };
 
-sparkline.width = 150
-sparkline.height = 70
+sparkline.width = 740;
+sparkline.height = 150;
 sparkline.dataset = [];
 
 
@@ -169,15 +169,20 @@ sparkline.draw = function(id, attribute){
   // console.log("Drawing: " + attribute);
 
   // Domain with y inverted
-  var x = d3.scale.linear().range([0, sparkline.width]);
+  // var x = d3.scale.linear().range([0, sparkline.width]);
+  // var y = d3.scale.linear().range([sparkline.height, 0]);
+
+
+  var x = d3.time.scale().range([0, sparkline.width]);
   var y = d3.scale.linear().range([sparkline.height, 0]);
 
-  // var tip = d3.tip()
-  //   .attr('class', 'd3-tip')
-  //   .offset([-10, 0])
-  //   .html(function(d) {
-  //     return "<strong>Frequency:</strong> <span style='color:red'>" + d.frequency + "</span>";
-  // })
+  var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+  var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
 
   // Create the line 
   // Changed the line to linear because basis distorted the ends and made it difficult
@@ -195,26 +200,24 @@ sparkline.draw = function(id, attribute){
 
   // Remove the existing svg then draw
   d3.select(id).select("svg").remove();
+
+  // Redraw the svg
   var svg = d3.select(id).append("svg")
         .attr("width", sparkline.width + sparkline.left + sparkline.right)
         .attr("height", sparkline.height + sparkline.top + sparkline.bottom)
         .append("g")
         .attr("transform", "translate(" + sparkline.left + "," + sparkline.top + ")");
 
-  // Tooltip
-  // svg.call(tip);
-
+  // Set the color of the trend line based on start and end 
   var trendcolor = (sparkline.dataset[dateslider.indexLow][attribute] >= sparkline.dataset[dateslider.indexHigh][attribute]) ? "sparkline decreasing" : "sparkline increasing";
-  console.log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute]);  
-  // console.log("indexHigh: " + dateslider.indexHigh);
+  // console.log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute]);  
   
-  // Draw the spark line
+  // Draw the trend line
   svg.append("path")
       .datum(sparkline.dataset)
       .attr("class", trendcolor)
       .attr("d", line);
-      // .on('mouseover', tip.show)
-      // .on('mouseout', tip.hide);
+
 }
 
 
