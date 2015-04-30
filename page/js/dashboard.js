@@ -14,8 +14,8 @@ var sparkline = {
   redraw: null,
 };
 
-sparkline.width = 100;
-sparkline.height = 25;
+sparkline.width = 800;
+sparkline.height = 300;
 sparkline.dataset = [];
 
 
@@ -44,7 +44,7 @@ var barchart = {
   redraw: null,
 }
 
-
+var filtered = [];
 
 
 var parseDate = d3.time.format("%Y-%m-%d").parse;
@@ -53,11 +53,12 @@ var parseDate = d3.time.format("%Y-%m-%d").parse;
 //------------------------//
 //  CSV ENCODING
 //------------------------//
-d3.csv("./csv/collisions.csv",
+// d3.csv("./csv/collisions.csv",
+d3.csv("./csv/crash_pcts_daily.csv",
   function(error, data) {            
       data.forEach(function(d,i) {
         sparkline.dataset.push({
-          // precinct: +d.precinct, // TODO
+          precinct: +d.precinct, // TODO
           date: parseDate(d.date),
           
           all_collisions: +d.all_collisions,
@@ -130,8 +131,6 @@ d3.csv("./csv/collisions.csv",
 
   
   console.log("Done Loading.");
-  // Set up the slider
-  dateslider.draw();
   
   dateslider.indexLow = 0;
   dateslider.indexHigh = sparkline.dataset.length-1;
@@ -139,14 +138,22 @@ d3.csv("./csv/collisions.csv",
   dateslider.indexHighNumber = sparkline.dataset.length-1;
 
   // Initial draw
+  dateslider.draw();
   sparkline.redraw();
   // barchart.redraw();
-  
+  console.log("CSV Done");
+
+  // filtered = sparkline.dataset.filter(precinct);
+ 
 });
 
 
 
 
+
+function precinct(d){
+  return d.precinct == 7;
+}
 
 
 
@@ -157,8 +164,8 @@ sparkline.redraw = function(){
   // TODO: create an object for this information.
   // TODO: call each in a loop
   sparkline.draw("#sparkline1","all_collisions");
-  sparkline.draw("#sparkline2","injury_collisions");
-  sparkline.draw("#sparkline3","fatal_collisions");
+  // sparkline.draw("#sparkline2","injury_collisions");
+  // sparkline.draw("#sparkline3","fatal_collisions");
   // sparkline.draw("#sparkline4","injures");
   // sparkline.draw("#sparkline5","fatalities");
   // sparkline.draw("#sparkline6","cyclists_involved");
@@ -175,7 +182,7 @@ sparkline.redraw = function(){
 //  DRAW THE SPARKLINE
 //------------------------//
 sparkline.draw = function(id, attribute){
-  // console.log("Drawing: " + attribute);
+  console.log("Drawing: " + attribute);
 
   // Domain with y inverted
   var x = d3.scale.linear().range([0, sparkline.width]);
@@ -199,6 +206,8 @@ sparkline.draw = function(id, attribute){
   // Remove the existing svg then draw
   d3.select(id).select("svg").remove();
 
+  console.log("one");
+
   // Redraw the svg
   var svg = d3.select(id).append("svg")
         .attr("width", sparkline.width + sparkline.left + sparkline.right)
@@ -206,16 +215,21 @@ sparkline.draw = function(id, attribute){
         .append("g")
         .attr("transform", "translate(" + sparkline.left + "," + sparkline.top + ")");
 
+  console.log("two");
+
   // Set the color of the trend line based on start and end 
   var trendcolor = (sparkline.dataset[dateslider.indexLow][attribute] >= sparkline.dataset[dateslider.indexHigh][attribute]) ? "sparkline decreasing" : "sparkline increasing";
   // console.log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute]);  
   
+  console.log("three");
+
   // Draw the trend line
   svg.append("path")
       .datum(sparkline.dataset)
       .attr("class", trendcolor)
       .attr("d", line);
 
+  console.log("Drawing: " + attribute);
 }
 
 
@@ -266,7 +280,7 @@ dateslider.draw = function(){
           $( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
           
           // Draw after all calculations
-          sparkline.redraw();
+          // sparkline.redraw();
           //barchart.redraw();
         } //END: Slide
 
@@ -355,99 +369,99 @@ dateslider.initButtons = function(){
 //------------------------//
 //  BAR CHART
 //------------------------//
-barchart.redraw = function(){
-  // console.log("drawBars()");
+// barchart.redraw = function(){
+//   // console.log("drawBars()");
  
 
-  // labels without 'Unspecified'
-  var labels = ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','View Obstructed/Limited','Windshield Inadequate'];
+//   // labels without 'Unspecified'
+//   var labels = ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','View Obstructed/Limited','Windshield Inadequate'];
   
-  // labels with 'Unspecified'
-  // var data = ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','Unspecified','View Obstructed/Limited','Windshield Inadequate']
+//   // labels with 'Unspecified'
+//   // var data = ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','Unspecified','View Obstructed/Limited','Windshield Inadequate']
 
-  // Contributing factors values array
-  values = []
+//   // Contributing factors values array
+//   values = []
   
-  // Initialize all values with with zeros for redraw
-  for(var i = 0; i < labels.length; i++){
-    values.push(0);
-  }
+//   // Initialize all values with with zeros for redraw
+//   for(var i = 0; i < labels.length; i++){
+//     values.push(0);
+//   }
 
-  // Add the Contributing Factors
-  for(var i1 = dateslider.indexLowNumber; i1 <= dateslider.indexHighNumber; i1++){
-    for (var i2=0; i2<labels.length; i2++) {
-      values[i2] += sparkline.dataset[i1].contributing_factors[i2].value 
-    }
-  }
+//   // Add the Contributing Factors
+//   for(var i1 = dateslider.indexLowNumber; i1 <= dateslider.indexHighNumber; i1++){
+//     for (var i2=0; i2<labels.length; i2++) {
+//       values[i2] += sparkline.dataset[i1].contributing_factors[i2].value 
+//     }
+//   }
   
 
-  var chartWidth       = 200,
-      barHeight        = 7,
-      groupHeight      = barHeight,
-      gapBetweenGroups = 6,
-      spaceForLabels   = 250;
+//   var chartWidth       = 200,
+//       barHeight        = 7,
+//       groupHeight      = barHeight,
+//       gapBetweenGroups = 6,
+//       spaceForLabels   = 250;
 
-  // Zip the series data together (first values, second values, etc.)
-  var zippedData = [];
-  for (var i=0; i<labels.length; i++) {
-    zippedData.push(values[i]);
-  }
+//   // Zip the series data together (first values, second values, etc.)
+//   var zippedData = [];
+//   for (var i=0; i<labels.length; i++) {
+//     zippedData.push(values[i]);
+//   }
 
-  var chartHeight = barHeight * zippedData.length + gapBetweenGroups * labels.length;
+//   var chartHeight = barHeight * zippedData.length + gapBetweenGroups * labels.length;
 
-  var x = d3.scale.linear()
-      .domain([0, d3.max(zippedData)])
-      .range([0, chartWidth-20]);
+//   var x = d3.scale.linear()
+//       .domain([0, d3.max(zippedData)])
+//       .range([0, chartWidth-20]);
 
-  var y = d3.scale.linear()
-      .range([chartHeight + gapBetweenGroups, 0]);
+//   var y = d3.scale.linear()
+//       .range([chartHeight + gapBetweenGroups, 0]);
 
-  var yAxis = d3.svg.axis()
-      .scale(y)
-      .tickFormat('')
-      .tickSize(0)
-      .orient("left");
+//   var yAxis = d3.svg.axis()
+//       .scale(y)
+//       .tickFormat('')
+//       .tickSize(0)
+//       .orient("left");
 
 
-  // Specify the chart area and dimensions
-  d3.select("#chart").select("svg").remove();
-  var chart = d3.select("#chart").append("svg")
-      .attr("width", spaceForLabels + chartWidth)
-      .attr("height", chartHeight);
+//   // Specify the chart area and dimensions
+//   d3.select("#chart").select("svg").remove();
+//   var chart = d3.select("#chart").append("svg")
+//       .attr("width", spaceForLabels + chartWidth)
+//       .attr("height", chartHeight);
 
-  // Create bars
-  var bar = chart.selectAll("g")
-      .data(zippedData)
-      .enter().append("g")
-      .attr("transform", function(d, i) {
-        return "translate(" + spaceForLabels + "," + (i * barHeight + gapBetweenGroups * (0.5 + i)) + ")";
-      });
+//   // Create bars
+//   var bar = chart.selectAll("g")
+//       .data(zippedData)
+//       .enter().append("g")
+//       .attr("transform", function(d, i) {
+//         return "translate(" + spaceForLabels + "," + (i * barHeight + gapBetweenGroups * (0.5 + i)) + ")";
+//       });
 
-  // Create rectangles of the correct width
-  bar.append("rect")
-      .attr("fill", "steelblue" )
-      .attr("class", "bar")
-      .attr("width", x)
-      .attr("height", barHeight);
+//   // Create rectangles of the correct width
+//   bar.append("rect")
+//       .attr("fill", "steelblue" )
+//       .attr("class", "bar")
+//       .attr("width", x)
+//       .attr("height", barHeight);
 
-  // Add text label in bar
-  bar.append("text")
-      .attr("x", function(d) { return x(d) + 25; })
-      .attr("y", barHeight / 2)
-      .attr("fill", "red")
-      .attr("dy", ".35em")
-      .text(function(d) { return d; });
+//   // Add text label in bar
+//   bar.append("text")
+//       .attr("x", function(d) { return x(d) + 25; })
+//       .attr("y", barHeight / 2)
+//       .attr("fill", "red")
+//       .attr("dy", ".35em")
+//       .text(function(d) { return d; });
 
-  // Draw labels
-  bar.append("text")
-      .attr("class", "label")
-      .attr("x", function(d) { return - 10; })
-      .attr("y", groupHeight / 2)
-      .attr("dy", ".35em")
-      .text(function(d,i) {return labels[i]});
+//   // Draw labels
+//   bar.append("text")
+//       .attr("class", "label")
+//       .attr("x", function(d) { return - 10; })
+//       .attr("y", groupHeight / 2)
+//       .attr("dy", ".35em")
+//       .text(function(d,i) {return labels[i]});
 
-  chart.append("g")
-        .attr("class", "y axis")
-        .attr("transform", "translate(" + spaceForLabels + ", " + -gapBetweenGroups/2 + ")")
-        .call(yAxis);
-}
+//   chart.append("g")
+//         .attr("class", "y axis")
+//         .attr("transform", "translate(" + spaceForLabels + ", " + -gapBetweenGroups/2 + ")")
+//         .call(yAxis);
+// }
