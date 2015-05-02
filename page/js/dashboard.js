@@ -1,7 +1,13 @@
+/*
+*   Filename: dashboard.js
+*/
 
-//------------------------//
-//  GLOBALS
-//------------------------//
+// --- File Globals
+var thisFileName = "dashboard.js";
+
+
+
+// --- Sparkline Global Variables
 var sparkline = {
   top: 0,
   right: 0,
@@ -18,8 +24,11 @@ sparkline.width = 800;
 sparkline.height = 300;
 sparkline.dataset = [];
 
+var parseDate = d3.time.format("%Y-%m-%d").parse;
 
 
+
+// --- Date Slider Global Variables
 var dateslider = {
   draw: null,
   dateArray: null,
@@ -36,131 +45,161 @@ var dateslider = {
   initButtons: null,
 }
 
-// dateslider.dateselector = dateslider.rangeyear;
 dateslider.dateArray = [];
 
+
+
+
+
+// --- Bar Chart Global Variables
 var barchart = {
   contributing_factors: [],
   redraw: null,
 }
 
-var filtered = [];
 
 
-var parseDate = d3.time.format("%Y-%m-%d").parse;
 
-
-//------------------------//
-//  CSV ENCODING
-//------------------------//
-// d3.csv("./csv/collisions.csv",
-d3.csv("./csv/crash_pcts_daily.csv",
-  function(error, data) {            
-      data.forEach(function(d,i) {
-        sparkline.dataset.push({
-          precinct: +d.precinct, // TODO
-          date: parseDate(d.date),
-          
-          all_collisions: +d.all_collisions,
-          injury_collisions: +d.injury_collisions,
-          fatal_collisions: +d.fatal_collisions,
-
-          // injures: +d.injures,
-          // fatalities: +d.fatalities,
-          // cyclists_involved: +d.cyclists_involved,
-          // pedestrians_involved: +d.pedestrians_involved,
-          
-          // year: +d.year, // TODO
-          // week: +d.week, // TODO
-
-          /* Contributing Factor Types
-            contributing_factors : [
-            { 'value' : +d.accelerator_defective, 'isDraw' : true },
-            { 'value' : +d.aggressive_driving_road_rage, 'isDraw' : true },
-            { 'value' : +d.alcohol_involvement, 'isDraw' : true },
-            { 'value' : +d.animals_action, 'isDraw' : true },
-            { 'value' : +d.backing_unsafely, 'isDraw' : true },
-            { 'value' : +d.brakes_defective, 'isDraw' : true },
-            { 'value' : +d.cell_phone_hand_held, 'isDraw' : true },
-            { 'value' : +d.cell_phone_hands_free, 'isDraw' : true },
-            { 'value' : +d.driver_inattention_distraction, 'isDraw' : true },
-            { 'value' : +d.driver_inexperience, 'isDraw' : true },
-            { 'value' : +d.drugs_illegal, 'isDraw' : true },
-            { 'value' : +d.failure_to_keep_right, 'isDraw' : true },
-            { 'value' : +d.failure_to_yield_right_of_way, 'isDraw' : true },
-            { 'value' : +d.fatigued_drowsy, 'isDraw' : true },
-            { 'value' : +d.fell_asleep, 'isDraw' : true },
-            { 'value' : +d.following_too_closely, 'isDraw' : true },
-            { 'value' : +d.glare, 'isDraw' : true },
-            { 'value' : +d.headlights_defective, 'isDraw' : true },
-            { 'value' : +d.illness, 'isDraw' : true },
-            { 'value' : +d.lane_marking_improper_inadequate, 'isDraw' : true },
-            { 'value' : +d.lost_consciousness, 'isDraw' : true },
-            { 'value' : +d.obstruction_debris, 'isDraw' : true },
-            { 'value' : +d.other_electronic_device, 'isDraw' : true },
-            { 'value' : +d.other_lighting_defects, 'isDraw' : true },
-            { 'value' : +d.other_vehicular, 'isDraw' : true },
-            { 'value' : +d.outside_car_distraction, 'isDraw' : true },
-            { 'value' : +d.oversized_vehicle, 'isDraw' : true },
-            { 'value' : +d.passenger_distraction, 'isDraw' : true },
-            { 'value' : +d.passing_or_lane_usage_improper, 'isDraw' : true },
-            { 'value' : +d.pavement_defective, 'isDraw' : true },
-            { 'value' : +d.pavement_slippery, 'isDraw' : true },
-            { 'value' : +d.pedestrian_bicyclist_other_pedestrian_error_confusion, 'isDraw' : true },
-            { 'value' : +d.physical_disability, 'isDraw' : true },
-            { 'value' : +d.prescription_medication, 'isDraw' : true },
-            { 'value' : +d.reaction_to_other_uninvolved_vehicle, 'isDraw' : true },
-            { 'value' : +d.shoulders_defective_improper, 'isDraw' : true },
-            { 'value' : +d.steering_failure, 'isDraw' : true },
-            { 'value' : +d.tire_failure_inadequate, 'isDraw' : true },
-            { 'value' : +d.tow_hitch_defective, 'isDraw' : true },
-            { 'value' : +d.traffic_control_device_improper_non_working, 'isDraw' : true },
-            { 'value' : +d.traffic_control_disregarded, 'isDraw' : true },
-            { 'value' : +d.turning_improperly, 'isDraw' : true },
-            { 'value' : +d.unsafe_lane_changing, 'isDraw' : true },
-            { 'value' : +d.unsafe_speed, 'isDraw' : true },
-            // { 'value' : +d.unspecified, 'isDraw' : true },
-            { 'value' : +d.view_obstructed_limited, 'isDraw' : true },
-            { 'value' : +d.windshield_inadequate, 'isDraw' : true }]*/
-          // contributing_factors : [+d.accelerator_defective,+d.aggressive_driving_road_rage,+d.alcohol_involvement,+d.animals_action,+d.backing_unsafely,+d.brakes_defective,+d.cell_phone_hand_held,+d.cell_phone_hands_free,+d.driver_inattention_distraction,+d.driver_inexperience,+d.drugs_illegal,+d.failure_to_keep_right,+d.failure_to_yield_right_of_way,+d.fatigued_drowsy,+d.fell_asleep,+d.following_too_closely,+d.glare,+d.headlights_defective,+d.illness,+d.lane_marking_improper_inadequate,+d.lost_consciousness,+d.obstruction_debris,+d.other_electronic_device,+d.other_lighting_defects,+d.other_vehicular,+d.outside_car_distraction,+d.oversized_vehicle,+d.passenger_distraction,+d.passing_or_lane_usage_improper,+d.pavement_defective,+d.pavement_slippery,+d.pedestrian_bicyclist_other_pedestrian_error_confusion,+d.physical_disability,+d.prescription_medication,+d.reaction_to_other_uninvolved_vehicle,+d.shoulders_defective_improper,+d.steering_failure,+d.tire_failure_inadequate,+d.tow_hitch_defective,+d.traffic_control_device_improper_non_working,+d.traffic_control_disregarded,+d.turning_improperly,+d.unsafe_lane_changing,+d.unsafe_speed,+d.unspecified,+d.view_obstructed_limited,+d.windshield_inadequate]
-
-        })
-        // Add the dates to its own array for the timeline slider
-        dateslider.dateArray.push(d.date);
-  });
-
-  
-  console.log("Done Loading.");
-  
-  dateslider.indexLow = 0;
-  dateslider.indexHigh = sparkline.dataset.length-1;
-  dateslider.indexLowNumber = 0;
-  dateslider.indexHighNumber = sparkline.dataset.length-1;
-
-  // Initial draw
-  dateslider.draw();
-  sparkline.redraw();
-  // barchart.redraw();
-  console.log("CSV Done");
-
-  // filtered = sparkline.dataset.filter(precinct);
- 
-});
+// --- CSV file attributes
+var csvFileDirectory = "./csv/";
+var csvFileName = "collisions_"
+var csvFileExtension = ".csv"
 
 
 
 
 
-function precinct(d){
-  return d.precinct == 7;
+
+/*  Logging function for displaying the filename and function calling the log
+ *  @param:  string    log message
+ *  @param:  string    current file name
+ *  @return: None
+*/
+function log(m, f)
+{
+  var message;
+
+  if(f.length == 0)
+  {
+    message = "[" + thisFileName + "]"; 
+  } 
+  else if(f.length > 0)
+  {
+    message = "[" + thisFileName + "][" + f + "] " + m;
+  }
+  console.log(message);  
 }
 
 
 
-//------------------------//
-//  RE-DRAW ALL SPARKLINES
-//------------------------//
-sparkline.redraw = function(){
+
+
+/*  Run this first to initialize the dashboard
+ *  @param:  None
+ *  @return: None
+*/
+function initDashboard()
+{
+  log("Initializing", "initDashboard");
+
+  // Initialize the precinct dropdown
+  initPrecinctSelect();
+  loadCollisionCSV(csvFileDirectory + csvFileName + "1" + csvFileExtension);
+}
+
+
+
+
+
+
+/*  Initialize the precinct selector
+ *  @param:  None
+ *  @return: None
+*/
+function initPrecinctSelect()
+{
+  $( "#select_precincts" ).change(function()
+  {
+    // Get the precinct value from the dropdown
+    var csvFileNumber = $("#select_precincts").val();
+    
+    // Generate the csv filename
+    csvFile = csvFileDirectory + csvFileName + csvFileNumber + csvFileExtension;
+
+    loadCollisionCSV(csvFile);
+    log("Loading CSV file: " + csvFile, "initPrecinctSelect");
+  });
+}
+
+
+
+
+
+
+
+
+
+/*  Load the CSV current file
+ *  @param:  string   Filename and direcotry of the current CSV file selected from the dropdown
+ *  @return: None
+*/
+function loadCollisionCSV(filename)
+{
+  // Clear the dataset and date array
+  sparkline.dataset = [];
+  dateslider.dateArray = [];
+
+  d3.csv(filename,
+    function(error, data) {            
+        data.forEach(function(d,i)
+        {
+          sparkline.dataset.push({
+            precinct: +d.precinct,
+            date: parseDate(d.date),
+            
+            all_collisions: +d.all_collisions,
+            injury_collisions: +d.injury_collisions,
+            fatal_collisions: +d.fatal_collisions,
+
+            
+          }) // sparkline.dataset.push
+
+          // Add the dates to its own array for the timeline slider
+          dateslider.dateArray.push(d.date);
+    
+    }); //data.forEach
+    
+    dateslider.indexLow = 0;
+    dateslider.indexHigh = sparkline.dataset.length-1;
+    dateslider.indexLowNumber = 0;
+    dateslider.indexHighNumber = sparkline.dataset.length-1;
+
+    // Initial draw
+    dateslider.redraw();
+
+    sparkline.redraw();
+
+    log("Done Loading.", "loadCollisionCSV" + ": " + filename);
+   
+  }); //d3.csv
+} //loadCollisionCSV
+
+
+
+
+
+
+
+
+
+
+
+/*  Redraw all of the sparklines
+ *  @param:  None
+ *  @return: None
+*/
+sparkline.redraw = function()
+{
   // TODO: create an object for this information.
   // TODO: call each in a loop
   sparkline.draw("#sparkline1","all_collisions");
@@ -178,11 +217,14 @@ sparkline.redraw = function(){
 
 
 
-//------------------------//
-//  DRAW THE SPARKLINE
-//------------------------//
-sparkline.draw = function(id, attribute){
-  console.log("Drawing: " + attribute);
+/*  Draw a single sparkline
+ *  @param:  string    id of the div
+ *  @param:  string    csv attribute of the sparkline to draw
+ *  @return: None
+*/
+sparkline.draw = function(id, attribute)
+{
+  log("Drawing: " + attribute, "sparkline.draw");
 
   // Domain with y inverted
   var x = d3.scale.linear().range([0, sparkline.width]);
@@ -206,8 +248,6 @@ sparkline.draw = function(id, attribute){
   // Remove the existing svg then draw
   d3.select(id).select("svg").remove();
 
-  console.log("one");
-
   // Redraw the svg
   var svg = d3.select(id).append("svg")
         .attr("width", sparkline.width + sparkline.left + sparkline.right)
@@ -215,21 +255,17 @@ sparkline.draw = function(id, attribute){
         .append("g")
         .attr("transform", "translate(" + sparkline.left + "," + sparkline.top + ")");
 
-  console.log("two");
 
   // Set the color of the trend line based on start and end 
   var trendcolor = (sparkline.dataset[dateslider.indexLow][attribute] >= sparkline.dataset[dateslider.indexHigh][attribute]) ? "sparkline decreasing" : "sparkline increasing";
-  // console.log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute]);  
-  
-  console.log("three");
+  // log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute], "sparkline.draw");  
+
 
   // Draw the trend line
   svg.append("path")
       .datum(sparkline.dataset)
       .attr("class", trendcolor)
       .attr("d", line);
-
-  console.log("Drawing: " + attribute);
 }
 
 
@@ -243,10 +279,12 @@ sparkline.draw = function(id, attribute){
 
 
 
-//------------------------//
-//  TIME SLIDER
-//------------------------//
-dateslider.draw = function(){
+/*  Draw the date timeline slider
+ *  @param:  None
+ *  @return: None
+*/
+dateslider.redraw = function()
+{
   $(function() {
       $( "#slider-range" ).slider({
         range: true,
@@ -267,7 +305,7 @@ dateslider.draw = function(){
 
           tMin = dateslider.dateArray[parseInt(ui.values[0])];
           tMax = dateslider.dateArray[parseInt(ui.values[1])];
-          // console.log(ui.values[1] + " " + dateslider.dateArray[parseInt(ui.values[1])]);
+          // log(ui.values[1] + " " + dateslider.dateArray[parseInt(ui.values[1])], dateslider.draw);
 
           // Index numbers to compare the current trend
           // Used to adjust the color of green or red
@@ -280,7 +318,7 @@ dateslider.draw = function(){
           $( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
           
           // Draw after all calculations
-          // sparkline.redraw();
+          sparkline.redraw();
           //barchart.redraw();
         } //END: Slide
 
@@ -307,10 +345,12 @@ dateslider.draw = function(){
 
 
 
-//------------------------//
-//  TIME SLIDER BUTTONS
-//------------------------//
-dateslider.initButtons = function(){
+/*  Initialize the time slider buttons
+ *  @param:  None
+ *  @return: None
+*/
+dateslider.initButtons = function()
+{
   $( "#btn-range" ).click(function() { 
     dateslider.dateselector = dateslider.rangerange;
     $(this).css('color', 'orange');
@@ -366,102 +406,104 @@ dateslider.initButtons = function(){
 
 
 
-//------------------------//
-//  BAR CHART
-//------------------------//
-// barchart.redraw = function(){
-//   // console.log("drawBars()");
+
+/*  Draw the contributing factors barchart
+ *  @param:  None
+ *  @return: None
+*/
+barchart.redraw = function(){
+  // log("drawBars()", "barchart.redraw");
  
 
-//   // labels without 'Unspecified'
-//   var labels = ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','View Obstructed/Limited','Windshield Inadequate'];
+  // labels without 'Unspecified'
+  var labels = ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','View Obstructed/Limited','Windshield Inadequate'];
   
-//   // labels with 'Unspecified'
-//   // var data = ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','Unspecified','View Obstructed/Limited','Windshield Inadequate']
+  // labels with 'Unspecified'
+  // var data = ['Accelerator Defective','Aggressive Driving/Road Rage','Alcohol Involvement','Animals Action','Backing Unsafely','Brakes Defective','Cell Phone (hand-held)','Cell Phone (hands-free)','Driver Inattention/Distraction','Driver Inexperience','Drugs (Illegal)','Failure to Keep Right','Failure to Yield Right-of-Way','Fatigued/Drowsy','Fell Asleep','Following Too Closely','Glare','Headlights Defective','Illness','Lane Marking Improper/Inadequate','Lost Consciousness','Obstruction/Debris','Other Electronic Device','Other Lighting Defects','Other Vehicular','Outside Car Distraction','Oversized Vehicle','Passenger Distraction','Passing or Lane Usage Improper','Pavement Defective','Pavement Slippery','Pedestrian/Bicyclist/Other Pedestrian Error/Confusion','Physical Disability','Prescription Medication','Reaction to Other Uninvolved Vehicle','Shoulders Defective/Improper','Steering Failure','Tire Failure/Inadequate','Tow Hitch Defective','Traffic Control Device Improper/Non-Working','Traffic Control Disregarded','Turning Improperly','Unsafe Lane Changing','Unsafe Speed','Unspecified','View Obstructed/Limited','Windshield Inadequate']
 
-//   // Contributing factors values array
-//   values = []
+  // Contributing factors values array
+  values = []
   
-//   // Initialize all values with with zeros for redraw
-//   for(var i = 0; i < labels.length; i++){
-//     values.push(0);
-//   }
+  // Initialize all values with with zeros for redraw
+  for(var i = 0; i < labels.length; i++){
+    values.push(0);
+  }
 
-//   // Add the Contributing Factors
-//   for(var i1 = dateslider.indexLowNumber; i1 <= dateslider.indexHighNumber; i1++){
-//     for (var i2=0; i2<labels.length; i2++) {
-//       values[i2] += sparkline.dataset[i1].contributing_factors[i2].value 
-//     }
-//   }
+  // Add the Contributing Factors
+  for(var i1 = dateslider.indexLowNumber; i1 <= dateslider.indexHighNumber; i1++){
+    for (var i2=0; i2<labels.length; i2++) {
+      values[i2] += sparkline.dataset[i1].contributing_factors[i2].value 
+    }
+  }
   
 
-//   var chartWidth       = 200,
-//       barHeight        = 7,
-//       groupHeight      = barHeight,
-//       gapBetweenGroups = 6,
-//       spaceForLabels   = 250;
+  var chartWidth       = 200,
+      barHeight        = 7,
+      groupHeight      = barHeight,
+      gapBetweenGroups = 6,
+      spaceForLabels   = 250;
 
-//   // Zip the series data together (first values, second values, etc.)
-//   var zippedData = [];
-//   for (var i=0; i<labels.length; i++) {
-//     zippedData.push(values[i]);
-//   }
+  // Zip the series data together (first values, second values, etc.)
+  var zippedData = [];
+  for (var i=0; i<labels.length; i++) {
+    zippedData.push(values[i]);
+  }
 
-//   var chartHeight = barHeight * zippedData.length + gapBetweenGroups * labels.length;
+  var chartHeight = barHeight * zippedData.length + gapBetweenGroups * labels.length;
 
-//   var x = d3.scale.linear()
-//       .domain([0, d3.max(zippedData)])
-//       .range([0, chartWidth-20]);
+  var x = d3.scale.linear()
+      .domain([0, d3.max(zippedData)])
+      .range([0, chartWidth-20]);
 
-//   var y = d3.scale.linear()
-//       .range([chartHeight + gapBetweenGroups, 0]);
+  var y = d3.scale.linear()
+      .range([chartHeight + gapBetweenGroups, 0]);
 
-//   var yAxis = d3.svg.axis()
-//       .scale(y)
-//       .tickFormat('')
-//       .tickSize(0)
-//       .orient("left");
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .tickFormat('')
+      .tickSize(0)
+      .orient("left");
 
 
-//   // Specify the chart area and dimensions
-//   d3.select("#chart").select("svg").remove();
-//   var chart = d3.select("#chart").append("svg")
-//       .attr("width", spaceForLabels + chartWidth)
-//       .attr("height", chartHeight);
+  // Specify the chart area and dimensions
+  d3.select("#chart").select("svg").remove();
+  var chart = d3.select("#chart").append("svg")
+      .attr("width", spaceForLabels + chartWidth)
+      .attr("height", chartHeight);
 
-//   // Create bars
-//   var bar = chart.selectAll("g")
-//       .data(zippedData)
-//       .enter().append("g")
-//       .attr("transform", function(d, i) {
-//         return "translate(" + spaceForLabels + "," + (i * barHeight + gapBetweenGroups * (0.5 + i)) + ")";
-//       });
+  // Create bars
+  var bar = chart.selectAll("g")
+      .data(zippedData)
+      .enter().append("g")
+      .attr("transform", function(d, i) {
+        return "translate(" + spaceForLabels + "," + (i * barHeight + gapBetweenGroups * (0.5 + i)) + ")";
+      });
 
-//   // Create rectangles of the correct width
-//   bar.append("rect")
-//       .attr("fill", "steelblue" )
-//       .attr("class", "bar")
-//       .attr("width", x)
-//       .attr("height", barHeight);
+  // Create rectangles of the correct width
+  bar.append("rect")
+      .attr("fill", "steelblue" )
+      .attr("class", "bar")
+      .attr("width", x)
+      .attr("height", barHeight);
 
-//   // Add text label in bar
-//   bar.append("text")
-//       .attr("x", function(d) { return x(d) + 25; })
-//       .attr("y", barHeight / 2)
-//       .attr("fill", "red")
-//       .attr("dy", ".35em")
-//       .text(function(d) { return d; });
+  // Add text label in bar
+  bar.append("text")
+      .attr("x", function(d) { return x(d) + 25; })
+      .attr("y", barHeight / 2)
+      .attr("fill", "red")
+      .attr("dy", ".35em")
+      .text(function(d) { return d; });
 
-//   // Draw labels
-//   bar.append("text")
-//       .attr("class", "label")
-//       .attr("x", function(d) { return - 10; })
-//       .attr("y", groupHeight / 2)
-//       .attr("dy", ".35em")
-//       .text(function(d,i) {return labels[i]});
+  // Draw labels
+  bar.append("text")
+      .attr("class", "label")
+      .attr("x", function(d) { return - 10; })
+      .attr("y", groupHeight / 2)
+      .attr("dy", ".35em")
+      .text(function(d,i) {return labels[i]});
 
-//   chart.append("g")
-//         .attr("class", "y axis")
-//         .attr("transform", "translate(" + spaceForLabels + ", " + -gapBetweenGroups/2 + ")")
-//         .call(yAxis);
-// }
+  chart.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + spaceForLabels + ", " + -gapBetweenGroups/2 + ")")
+        .call(yAxis);
+}
