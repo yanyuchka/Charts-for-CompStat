@@ -61,7 +61,7 @@ var barchart = {
 
 
 // --- CSV file attributes
-var csvFileDirectory = "./csv/";
+var csvFileDirectory = "./csv/";  // all data in "./csv/pcts/"
 var csvFileName = "collisions_"
 var csvFileExtension = ".csv"
 
@@ -149,7 +149,28 @@ function loadCollisionCSV(filename)
   sparkline.dataset = [];
   dateslider.dateArray = [];
 
+  /* data to plug in
   d3.csv(filename,
+    function(error, data) {            
+        data.forEach(function(d,i)
+        {
+          sparkline.dataset.push({
+                    date: parseDate(d.date),
+                    all_collisions: +d.all_collisions,
+                    injury_collisions: +d.injury_collisions,
+                    fatal_collisions: +d.fatal_collisions,
+                    injures: +d.injures,
+                    fatalities: +d.fatalities,
+                    cyclists_involved: +d.cyclists_involved,
+                    pedestrians_involved: +d.pedestrians_involved,
+                    year: +d.year,
+                    week: +d.week,
+            
+          }) // sparkline.dataset.push
+
+   */
+
+   d3.csv(filename,
     function(error, data) {            
         data.forEach(function(d,i)
         {
@@ -162,7 +183,7 @@ function loadCollisionCSV(filename)
             fatal_collisions: +d.fatal_collisions,
 
             
-          }) // sparkline.dataset.push
+          })
 
           // Add the dates to its own array for the timeline slider
           dateslider.dateArray.push(d.date);
