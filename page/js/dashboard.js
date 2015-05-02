@@ -61,7 +61,7 @@ var barchart = {
 
 
 // --- CSV file attributes
-var csvFileDirectory = "./csv/";  // all data in "./csv/pcts/"
+var csvFileDirectory = "./csv/pcts_daily/";  // all data in "./csv/pcts_daily/"
 var csvFileName = "collisions_"
 var csvFileExtension = ".csv"
 
