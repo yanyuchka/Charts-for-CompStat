@@ -200,6 +200,7 @@ sparkline.loadCSV = function(filename)
             week: +d.week,
             row_number: +d.row_number,
             label: d.label,
+            index: +d.index,
           })
     
     }); //data.forEach
@@ -291,10 +292,10 @@ sparkline.redraw = function()
   sparkline.draw("#sparkline1","all_collisions");
   sparkline.draw("#sparkline2","injury_collisions");
   sparkline.draw("#sparkline3","fatal_collisions");
-  // sparkline.draw("#sparkline4","injures");
-  // sparkline.draw("#sparkline5","fatalities");
-  // sparkline.draw("#sparkline6","cyclists_involved");
-  // sparkline.draw("#sparkline7","pedestrians_involved");
+  sparkline.draw("#sparkline4","injures");
+  sparkline.draw("#sparkline5","fatalities");
+  sparkline.draw("#sparkline6","cyclists_involved");
+  sparkline.draw("#sparkline7","pedestrians_involved");
 }
 
 
@@ -323,12 +324,12 @@ sparkline.draw = function(id, attribute)
   // https://github.com/mbostock/d3/wiki/SVG-Shapes#line_interpolate
   var line = d3.svg.line()
       .interpolate("linear")
-      .x(function(d) { return x(d.row_number); })
+      .x(function(d) { return x(d.index); })
       .y(function(d) { return y(d[attribute]); });
 
 
   // Set up the domain based on the date slider
-  x.domain(d3.extent(sparkline.dataset, function(d) { return d.row_number; }));
+  x.domain(d3.extent(sparkline.dataset, function(d) { return d.index; }));
   y.domain([0, d3.max(sparkline.dataset, function(d) { return d[attribute]; })]);
 
   // Remove the existing svg then draw
