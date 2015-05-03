@@ -1,6 +1,7 @@
 .sparkline {
 	fill: none;
 	stroke-width: 1.5px;
+	width: 400px;
 }
 
 .decreasing {
