@@ -4,7 +4,8 @@
 
 // --- File Globals
 var thisFileName = "dashboard.js";
-
+var list_of_precincts = [1,5,6,7,9,10,13,14,17,18,19,20,22,23,24,25,26,28,30,32,33,34,40,41,42,43,44,45,46,47,48,49,50,52,60,61,62,63,66,67,68,69,70,71,72,73,75,76,77,78,79,81,83,84,88,90,94,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,120,121,122,123];
+var initialPrecinct = 1;
 
 
 // --- Sparkline Global Variables
@@ -13,16 +14,19 @@ var sparkline = {
   right: 0,
   bottom: 0,
   left: 0,
-  width: null,
-  height: null,  
+  width: 150,
+  height: 20,  
   dataset: null,
   draw: null,
   redraw: null,
+  loadCSV: null,
+  loadDropdownDates: null,
+  csvFileDirectory: "./csv/pcts/",
+  csvFileName: "collisions_",
+  csvFileExtension: ".csv",
 };
 
-sparkline.width = 800;
-sparkline.height = 300;
-sparkline.dataset = [];
+// sparkline.dataset = [];
 
 var parseDate = d3.time.format("%Y-%m-%d").parse;
 
@@ -60,10 +64,27 @@ var barchart = {
 
 
 
-// --- CSV file attributes
-var csvFileDirectory = "./csv/";  // all data in "./csv/pcts/"
-var csvFileName = "collisions_"
-var csvFileExtension = ".csv"
+
+// --- Daily trend line
+var dailytrendline = {
+  dataset: null,
+  redraw: null,
+  loadCSV: null,
+  csvFileDirectory: "./csv/pcts_daily/",
+  csvFileName: "collisions_",
+  csvFileExtension: ".csv",
+}
+
+dailytrendline.dataset = [];
+
+
+
+
+
+
+
+
+
 
 
 
@@ -104,7 +125,12 @@ function initDashboard()
 
   // Initialize the precinct dropdown
   initPrecinctSelect();
-  loadCollisionCSV(csvFileDirectory + csvFileName + "1" + csvFileExtension);
+  
+  // Load the Daily Trend Line Dataset
+  dailytrendline.loadCSV(dailytrendline.csvFileDirectory + dailytrendline.csvFileName + initialPrecinct + dailytrendline.csvFileExtension);
+
+  // Load the Spark Line Dataset
+  sparkline.loadCSV(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
 }
 
 
@@ -118,16 +144,23 @@ function initDashboard()
 */
 function initPrecinctSelect()
 {
+
+  // Populate the precincts dropdown dynamically
+  list_of_precincts.forEach(function(d){$( "<option value=\"" + d + "\">" + "Precinct: " + d + "</option>" ).appendTo( $( "#select_precincts" ) );});
+  log("Load Dropdown Precincts", "initPrecinctSelect");
+
   $( "#select_precincts" ).change(function()
   {
     // Get the precinct value from the dropdown
     var csvFileNumber = $("#select_precincts").val();
-    
-    // Generate the csv filename
-    csvFile = csvFileDirectory + csvFileName + csvFileNumber + csvFileExtension;
 
-    loadCollisionCSV(csvFile);
-    log("Loading CSV file: " + csvFile, "initPrecinctSelect");
+    // Load the Daily Trend Line Dataset
+    dailytrendline.loadCSV(dailytrendline.csvFileDirectory + dailytrendline.csvFileName + csvFileNumber + dailytrendline.csvFileExtension);
+
+    // Load the Spark Line Dataset
+    sparkline.loadCSV(sparkline.csvFileDirectory + sparkline.csvFileName + csvFileNumber + sparkline.csvFileExtension);
+
+    log("Loading Precinct: " + csvFileNumber, "initPrecinctSelect");
   });
 }
 
@@ -143,45 +176,78 @@ function initPrecinctSelect()
  *  @param:  string   Filename and direcotry of the current CSV file selected from the dropdown
  *  @return: None
 */
-function loadCollisionCSV(filename)
+sparkline.loadCSV = function(filename)
 {
   // Clear the dataset and date array
   sparkline.dataset = [];
-  dateslider.dateArray = [];
 
-  /* data to plug in
+  
+  // Load daily trendline dataset
+  // Load date slider dataset
   d3.csv(filename,
     function(error, data) {            
         data.forEach(function(d,i)
         {
           sparkline.dataset.push({
-                    date: parseDate(d.date),
-                    all_collisions: +d.all_collisions,
-                    injury_collisions: +d.injury_collisions,
-                    fatal_collisions: +d.fatal_collisions,
-                    injures: +d.injures,
-                    fatalities: +d.fatalities,
-                    cyclists_involved: +d.cyclists_involved,
-                    pedestrians_involved: +d.pedestrians_involved,
-                    year: +d.year,
-                    week: +d.week,
-            
-          }) // sparkline.dataset.push
+            all_collisions: +d.all_collisions,
+            injury_collisions: +d.injury_collisions,
+            fatal_collisions: +d.fatal_collisions,
+            injures: +d.injures,
+            fatalities: +d.fatalities,
+            cyclists_involved: +d.cyclists_involved,
+            pedestrians_involved: +d.pedestrians_involved,
+            year: +d.year,
+            week: +d.week,
+            row_number: +d.row_number,
+            label: d.label,
+          })
+    
+    }); //data.forEach
 
-   */
+    // Initial draw
+    sparkline.redraw();
 
-   d3.csv(filename,
+    // Populate the dropdown with dates
+    sparkline.loadDropdownDates();
+
+    log("Done Loading.", "sparkline.loadCSV" + ": " + filename);
+   
+  }); //d3.csv
+} //sparkline.loadCSV
+
+
+
+
+
+
+
+
+
+
+/*  Load the CSV current file
+ *  @param:  string   Filename and direcotry of the current CSV file selected from the dropdown
+ *  @return: None
+*/
+dailytrendline.loadCSV = function(filename)
+{
+  // Clear the dataset and date array
+  dailytrendline.dataset = [];
+  dateslider.dateArray = [];
+
+  
+  // Load daily trendline dataset
+  // Load date slider dataset
+  d3.csv(filename,
     function(error, data) {            
         data.forEach(function(d,i)
         {
-          sparkline.dataset.push({
+          dailytrendline.dataset.push({
             precinct: +d.precinct,
             date: parseDate(d.date),
             
             all_collisions: +d.all_collisions,
             injury_collisions: +d.injury_collisions,
             fatal_collisions: +d.fatal_collisions,
-
             
           })
 
@@ -198,12 +264,11 @@ function loadCollisionCSV(filename)
     // Initial draw
     dateslider.redraw();
 
-    sparkline.redraw();
-
-    log("Done Loading.", "loadCollisionCSV" + ": " + filename);
+    log("Done Loading.", "dailytrendline.loadCSV" + ": " + filename);
    
   }); //d3.csv
-} //loadCollisionCSV
+} //dailytrendline.loadCSV
+
 
 
 
@@ -224,8 +289,8 @@ sparkline.redraw = function()
   // TODO: create an object for this information.
   // TODO: call each in a loop
   sparkline.draw("#sparkline1","all_collisions");
-  // sparkline.draw("#sparkline2","injury_collisions");
-  // sparkline.draw("#sparkline3","fatal_collisions");
+  sparkline.draw("#sparkline2","injury_collisions");
+  sparkline.draw("#sparkline3","fatal_collisions");
   // sparkline.draw("#sparkline4","injures");
   // sparkline.draw("#sparkline5","fatalities");
   // sparkline.draw("#sparkline6","cyclists_involved");
@@ -244,6 +309,84 @@ sparkline.redraw = function()
  *  @return: None
 */
 sparkline.draw = function(id, attribute)
+{
+  log("Drawing: " + attribute, "sparkline.draw");
+
+  // Domain with y inverted
+  var x = d3.scale.linear().range([0, sparkline.width]);
+  var y = d3.scale.linear().range([sparkline.height, 0]);
+
+
+  // Create the line 
+  // Changed the line to linear because basis distorted the ends and made it difficult
+  // to see the difference from high and low comparing numbers
+  // https://github.com/mbostock/d3/wiki/SVG-Shapes#line_interpolate
+  var line = d3.svg.line()
+      .interpolate("linear")
+      .x(function(d) { return x(d.row_number); })
+      .y(function(d) { return y(d[attribute]); });
+
+
+  // Set up the domain based on the date slider
+  x.domain(d3.extent(sparkline.dataset, function(d) { return d.row_number; }));
+  y.domain([0, d3.max(sparkline.dataset, function(d) { return d[attribute]; })]);
+
+  // Remove the existing svg then draw
+  d3.select(id).select("svg").remove();
+
+  // Redraw the svg
+  var svg = d3.select(id).append("svg")
+        .attr("width", sparkline.width + sparkline.left + sparkline.right)
+        .attr("height", sparkline.height + sparkline.top + sparkline.bottom)
+        .append("g")
+        .attr("transform", "translate(" + sparkline.left + "," + sparkline.top + ")");
+
+
+  // Set the color of the trend line based on start and end 
+  dataMin = d3.min(sparkline.dataset, function(d) { return d[attribute]; });
+  dataMax = d3.max(sparkline.dataset, function(d) { return d[attribute]; });
+  var trendcolor = (sparkline.dataset[dataMin][attribute] >= sparkline.dataset[dataMax][attribute] ? "sparkline decreasing" : "sparkline increasing");
+  // log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute], "sparkline.draw");  
+
+  // Draw the trend line
+  svg.append("path")
+      .datum(sparkline.dataset)
+      .attr("class", trendcolor)
+      .attr("d", line);
+}
+
+
+
+
+
+
+
+/*  Populate the dropdown dates
+ *  @param:  None
+ *  @return: None
+*/
+sparkline.loadDropdownDates = function(dates){
+  
+  // Append each of the dates to the dropdown
+  sparkline.dataset.forEach(function(d){
+    $( "<option>" + d.label + "</option>" ).appendTo( $( "#select_dates" ) );
+  });
+
+  log("Load Dropdown Dates", "loadDropdownDates");
+}
+
+
+
+
+
+
+
+
+/*  Draw the daily trend line
+ *  @param:  string    id of the div
+ *  @return: None
+*/
+dailytrendline.draw = function(id, attribute)
 {
   log("Drawing: " + attribute, "sparkline.draw");
 
@@ -288,6 +431,8 @@ sparkline.draw = function(id, attribute)
       .attr("class", trendcolor)
       .attr("d", line);
 }
+
+
 
 
 

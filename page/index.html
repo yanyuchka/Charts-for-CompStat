@@ -26,34 +26,6 @@
 
 <body>
 
-
-	<!-- Top Bar -->
-	<!-- <div id="top-bar"> -->
-		<!-- <div class="wrap">				 -->
-				<!-- <a href="./"><img style="float:left;padding-right:20px;" src="./images/nyc_white_charts.png"></a> -->
-		
-				<!-- <ul class="nav">
-					<li class="menu-item"><a href="">One</a></li>
-					<li class="menu-item"><a href="">Two</a></li>
-					<li class="menu-item"><a href="">Three</a></li>
-					<li class="menu-item"><a href="">Four</a></li>
-					<li class="menu-item"><a href="">Five</a></li>
-					<li class="menu-item-last"><a href="">Six</a></li>					
-				</ul> -->
-				
-				<!--
-				<ul class="social-links">
-					<a href="./"><img style="float:left;" src="./images/twitter.png"></a>
-					<a href="./"><img style="float:left;" src="./images/facebook.png"></a>
-					<a href="./"><img style="float:left;" src="./images/instagram.png"></a>
-					<a href="./"><img style="float:left;" src="./images/youtube.png"></a>
-				</ul>
-				-->
-		
-		<!-- </div> -->
-	<!-- </div> -->
-
-
 	<!-- Dahboard Container -->
 	<div id="container">
 
@@ -66,8 +38,17 @@
 			<div id="chart" class="chart"></div>
 		</div> -->
 	
+
 		<!-- Page -->
 		<div id="dashboard-page">
+			<div id="dropdown-selectors">
+
+				<!-- Dates Selector -->
+				<select id="select_dates"></select>
+				<!-- Precinct Selector -->
+				<select id="select_precincts"></select>
+
+			</div>
 
 			<!-- Slider Container -->
 			<div id="slider-container">
@@ -88,112 +69,29 @@
 
 			<br /><br />
 
-			<select id="select_precincts">
-			<option value="1">Precinct 1</option>
-			<option value="5">Precinct 5</option>
-			<option value="6">Precinct 6</option>
-			<option value="7">Precinct 7</option>
-			<option value="9">Precinct 9</option>
-			<option value="10">Precinct 10</option>
-			<option value="13">Precinct 13</option>
-			<option value="14">Precinct 14</option>
-			<option value="17">Precinct 17</option>
-			<option value="18">Precinct 18</option>
-			<option value="19">Precinct 19</option>
-			<option value="20">Precinct 20</option>
-			<option value="22">Precinct 22</option>
-			<option value="23">Precinct 23</option>
-			<option value="24">Precinct 24</option>
-			<option value="25">Precinct 25</option>
-			<option value="26">Precinct 26</option>
-			<option value="28">Precinct 28</option>
-			<option value="30">Precinct 30</option>
-			<option value="32">Precinct 32</option>
-			<option value="33">Precinct 33</option>
-			<option value="34">Precinct 34</option>
-			<option value="40">Precinct 40</option>
-			<option value="41">Precinct 41</option>
-			<option value="42">Precinct 42</option>
-			<option value="43">Precinct 43</option>
-			<option value="44">Precinct 44</option>
-			<option value="45">Precinct 45</option>
-			<option value="46">Precinct 46</option>
-			<option value="47">Precinct 47</option>
-			<option value="48">Precinct 48</option>
-			<option value="49">Precinct 49</option>
-			<option value="50">Precinct 50</option>
-			<option value="52">Precinct 52</option>
-			<option value="60">Precinct 60</option>
-			<option value="61">Precinct 61</option>
-			<option value="62">Precinct 62</option>
-			<option value="63">Precinct 63</option>
-			<option value="66">Precinct 66</option>
-			<option value="67">Precinct 67</option>
-			<option value="68">Precinct 68</option>
-			<option value="69">Precinct 69</option>
-			<option value="70">Precinct 70</option>
-			<option value="71">Precinct 71</option>
-			<option value="72">Precinct 72</option>
-			<option value="73">Precinct 73</option>
-			<option value="75">Precinct 75</option>
-			<option value="76">Precinct 76</option>
-			<option value="77">Precinct 77</option>
-			<option value="78">Precinct 78</option>
-			<option value="79">Precinct 79</option>
-			<option value="81">Precinct 81</option>
-			<option value="83">Precinct 83</option>
-			<option value="84">Precinct 84</option>
-			<option value="88">Precinct 88</option>
-			<option value="90">Precinct 90</option>
-			<option value="94">Precinct 94</option>
-			<option value="100">Precinct 100</option>
-			<option value="101">Precinct 101</option>
-			<option value="102">Precinct 102</option>
-			<option value="103">Precinct 103</option>
-			<option value="104">Precinct 104</option>
-			<option value="105">Precinct 105</option>
-			<option value="106">Precinct 106</option>
-			<option value="107">Precinct 107</option>
-			<option value="108">Precinct 108</option>
-			<option value="109">Precinct 109</option>
-			<option value="110">Precinct 110</option>
-			<option value="111">Precinct 111</option>
-			<option value="112">Precinct 112</option>
-			<option value="113">Precinct 113</option>
-			<option value="114">Precinct 114</option>
-			<option value="115">Precinct 115</option>
-			<option value="120">Precinct 120</option>
-			<option value="121">Precinct 121</option>
-			<option value="122">Precinct 122</option>
-			<option value="123">Precinct 123</option>
-
-			</select>
-
 
 			<!-- Sparklines -->
-			<div id="sparkline1" class="sparkline"><p>All Collisions</p></div>
-			<div id="sparkline2" class="sparkline"><p>Injury Collisions</p></div>
-			<div id="sparkline3" class="sparkline"><p>Fatal Collisions</p></div>
-			<!-- <div id="sparkline4" class="sparkline"><p></p></div> -->
-			<!-- <div id="sparkline5" class="sparkline"><p></p></div> -->
-			<!-- <div id="sparkline6" class="sparkline"><p></p></div> -->
+			<div id="sparkline1" class="sparkline"><p style="float:left;">All Collisions</p></div>
+			<div id="sparkline2" class="sparkline"><p style="float:left;">Injury Collisions</p></div>
+			<div id="sparkline3" class="sparkline"><p style="float:left;">Fatal Collisions</p></div>
+			<div id="sparkline3" class="sparkline"><p style="float:left;">Injuries</p></div>
+			<div id="sparkline3" class="sparkline"><p style="float:left;">Fatalities</p></div>
+			<div id="sparkline3" class="sparkline"><p style="float:left;">Cyclists Involved</p></div>
+			<div id="sparkline3" class="sparkline"><p style="float:left;">Pedestrians Involved</p></div>
 
 		</div> <!-- end: Page -->
 			
 	</div> <!-- end: Container -->
 
-	
 
+	<!-- Load D3 js file -->
 	<script src="http://d3js.org/d3.v3.js"></script>
+
+	<!-- Load the Dashboard js file -->
 	<script src="./js/dashboard.js"></script>
 
 	<!-- Initialize the dashboard  -->
 	<script>initDashboard();</script>
-
-
-
-
-
 
 </body>
 </html>
