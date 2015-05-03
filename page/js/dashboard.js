@@ -6,6 +6,7 @@
 var thisFileName = "dashboard.js";
 var list_of_precincts = [1,5,6,7,9,10,13,14,17,18,19,20,22,23,24,25,26,28,30,32,33,34,40,41,42,43,44,45,46,47,48,49,50,52,60,61,62,63,66,67,68,69,70,71,72,73,75,76,77,78,79,81,83,84,88,90,94,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,120,121,122,123];
 var initialPrecinct = 1;
+var selectedIndex = 100;
 
 
 // --- Sparkline Global Variables
@@ -20,7 +21,7 @@ var sparkline = {
   draw: null,
   redraw: null,
   loadCSV: null,
-  loadDropdownDates: null,
+  initDropdownDates: null,
   csvFileDirectory: "./csv/pcts/",
   csvFileName: "collisions_",
   csvFileExtension: ".csv",
@@ -147,7 +148,6 @@ function initPrecinctSelect()
 
   // Populate the precincts dropdown dynamically
   list_of_precincts.forEach(function(d){$( "<option value=\"" + d + "\">" + "Precinct: " + d + "</option>" ).appendTo( $( "#select_precincts" ) );});
-  log("Load Dropdown Precincts", "initPrecinctSelect");
 
   $( "#select_precincts" ).change(function()
   {
@@ -162,8 +162,34 @@ function initPrecinctSelect()
 
     log("Loading Precinct: " + csvFileNumber, "initPrecinctSelect");
   });
+  
+  log("Initialize Dropdown Precincts", "initPrecinctSelect");
 }
 
+
+
+
+/*  Initialize and populate the dropdown dates
+ *  @param:  None
+ *  @return: None
+*/
+function initDropdownDates()
+{  
+  // Append each of the dates to the dropdown
+  sparkline.dataset.forEach(function(d){$( "<option value=\"" + d.index + "\">" + d.label + "</option>" ).appendTo( $( "#select_dates" ) );});
+
+  // On-click
+  $( "#select_dates" ).change(function(){
+    selectedIndex = $("#select_dates").val();
+    // TODO: make this show the actual date being loaded, not the index number
+    log("Loading Date: ", selectedIndex);
+
+    // Redraw all sparklines
+    sparkline.redraw();
+  });
+
+  log("Initialize Dropdown Dates", "initDropdownDates");
+}
 
 
 
@@ -209,7 +235,7 @@ sparkline.loadCSV = function(filename)
     sparkline.redraw();
 
     // Populate the dropdown with dates
-    sparkline.loadDropdownDates();
+    initDropdownDates();
 
     log("Done Loading.", "sparkline.loadCSV" + ": " + filename);
    
@@ -329,7 +355,9 @@ sparkline.draw = function(id, attribute)
 
 
   // Set up the domain based on the date slider
-  x.domain(d3.extent(sparkline.dataset, function(d) { return d.index; }));
+  // x.domain(d3.extent(sparkline.dataset, function(d) { return d.index; }));
+
+  x.domain([0,selectedIndex]);
   y.domain([0, d3.max(sparkline.dataset, function(d) { return d[attribute]; })]);
 
   // Remove the existing svg then draw
@@ -346,8 +374,12 @@ sparkline.draw = function(id, attribute)
   // Set the color of the trend line based on start and end 
   dataMin = d3.min(sparkline.dataset, function(d) { return d[attribute]; });
   dataMax = d3.max(sparkline.dataset, function(d) { return d[attribute]; });
-  var trendcolor = (sparkline.dataset[dataMin][attribute] >= sparkline.dataset[dataMax][attribute] ? "sparkline decreasing" : "sparkline increasing");
+  
+  //TODO: Ask Alex if he wants the sparkline color to change
+  // var trendcolor = (sparkline.dataset[dataMin][attribute] >= sparkline.dataset[dataMax][attribute] ? "sparkline color_decreasing" : "sparkline color_increasing");
   // log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute], "sparkline.draw");  
+
+  trendcolor = "sparkline color_black";
 
   // Draw the trend line
   svg.append("path")
@@ -360,21 +392,6 @@ sparkline.draw = function(id, attribute)
 
 
 
-
-
-/*  Populate the dropdown dates
- *  @param:  None
- *  @return: None
-*/
-sparkline.loadDropdownDates = function(dates){
-  
-  // Append each of the dates to the dropdown
-  sparkline.dataset.forEach(function(d){
-    $( "<option>" + d.label + "</option>" ).appendTo( $( "#select_dates" ) );
-  });
-
-  log("Load Dropdown Dates", "loadDropdownDates");
-}
 
 
 
@@ -407,6 +424,8 @@ dailytrendline.draw = function(id, attribute)
 
 
   // Set up the domain based on the date slider
+  // TODO: This might be able to get replaced and not use d3.extent
+  // TODO: x.domain([parseDate(tMin), parseDate(tMax)] );
   x.domain(d3.extent( [parseDate(tMin), parseDate(tMax)] ));
   y.domain([0, d3.max(sparkline.dataset, function(d) { return d[attribute]; })]);  
 

@@ -4,14 +4,23 @@
 	width: 400px;
 }
 
-.decreasing {
+.color_decreasing {
  	stroke: #0a0;
 }
 
 
-.increasing {
+.color_increasing {
 	stroke: #a00;
 }
+
+.color_black{
+	stroke: #000;
+}
+
+.color_dot:{
+	stroke: #f00;
+}
+
 
 
 
