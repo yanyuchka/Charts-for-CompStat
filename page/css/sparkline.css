@@ -4,6 +4,14 @@
 	width: 400px;
 }
 
+
+.sparkcircle {
+  fill: #f00;
+  stroke: none;
+}
+
+
+
 .color_decreasing {
  	stroke: #0a0;
 }
@@ -23,7 +31,7 @@
 
 
 
-
+/*
 .axis path,
 .axis line {
   fill: none;
@@ -33,4 +41,52 @@
 
 .x.axis path {
   display: none;
+}
+
+*/
+
+
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.x.axis line {
+  stroke: #fff;
+}
+
+.x.axis .minor {
+  stroke-opacity: .5;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.y.axis line, .y.axis path {
+  fill: none;
+  stroke: #000;
+}
+
+
+
+
+
+
+
+
+
+
+path.line {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+path.area_decreasing {
+  fill: #0a0;
+}
+
+path.area_increasing {
+  fill: #a00;
 }

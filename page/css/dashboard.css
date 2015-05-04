@@ -41,3 +41,11 @@
 #select_precincts{
 	float:right;
 }
+
+
+
+#dailytrend1{
+	position: fixed;
+    bottom: 0;
+    width: 100%;
+}

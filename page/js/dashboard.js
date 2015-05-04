@@ -7,16 +7,16 @@ var thisFileName = "dashboard.js";
 var list_of_precincts = [1,5,6,7,9,10,13,14,17,18,19,20,22,23,24,25,26,28,30,32,33,34,40,41,42,43,44,45,46,47,48,49,50,52,60,61,62,63,66,67,68,69,70,71,72,73,75,76,77,78,79,81,83,84,88,90,94,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,120,121,122,123];
 var initialPrecinct = 1;
 var selectedIndex = 100;
-
+var parseDate = d3.time.format("%Y-%m-%d").parse;
 
 // --- Sparkline Global Variables
 var sparkline = {
   top: 0,
-  right: 0,
+  right: 10,
   bottom: 0,
-  left: 0,
-  width: 150,
-  height: 20,  
+  left: 10,
+  width: 0,
+  height: 0,  
   dataset: null,
   draw: null,
   redraw: null,
@@ -27,9 +27,10 @@ var sparkline = {
   csvFileExtension: ".csv",
 };
 
-// sparkline.dataset = [];
 
-var parseDate = d3.time.format("%Y-%m-%d").parse;
+sparkline.width = 150 - sparkline.left - sparkline.right,
+sparkline.height = 25 - sparkline.top - sparkline.bottom;
+
 
 
 
@@ -74,11 +75,18 @@ var dailytrendline = {
   csvFileDirectory: "./csv/pcts_daily/",
   csvFileName: "collisions_",
   csvFileExtension: ".csv",
+  width: 0,
+  height: 0,
+  left: 10,
+  right: 10,
+  top: 10,
+  bottom: 10,
 }
 
 dailytrendline.dataset = [];
 
-
+dailytrendline.width = 1000 - dailytrendline.left - dailytrendline.right,
+dailytrendline.height = 300 - dailytrendline.top - dailytrendline.bottom;
 
 
 
@@ -126,12 +134,12 @@ function initDashboard()
 
   // Initialize the precinct dropdown
   initPrecinctSelect();
-  
-  // Load the Daily Trend Line Dataset
-  dailytrendline.loadCSV(dailytrendline.csvFileDirectory + dailytrendline.csvFileName + initialPrecinct + dailytrendline.csvFileExtension);
 
   // Load the Spark Line Dataset
   sparkline.loadCSV(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
+  
+  // Load the Daily Trend Line Dataset
+  dailytrendline.loadCSV(dailytrendline.csvFileDirectory + dailytrendline.csvFileName + initialPrecinct + dailytrendline.csvFileExtension);
 }
 
 
@@ -204,6 +212,7 @@ function initDropdownDates()
 */
 sparkline.loadCSV = function(filename)
 {
+  log("Loading Sparkline CSV.", "sparkline.loadCSV" + ": " + filename);
   // Clear the dataset and date array
   sparkline.dataset = [];
 
@@ -257,6 +266,7 @@ sparkline.loadCSV = function(filename)
 */
 dailytrendline.loadCSV = function(filename)
 {
+  log("Loading Dailytrendline CSV.", "sparkline.loadCSV" + ": " + filename);
   // Clear the dataset and date array
   dailytrendline.dataset = [];
   dateslider.dateArray = [];
@@ -284,12 +294,13 @@ dailytrendline.loadCSV = function(filename)
     }); //data.forEach
     
     dateslider.indexLow = 0;
-    dateslider.indexHigh = sparkline.dataset.length-1;
+    dateslider.indexHigh = dailytrendline.dataset.length-1;
     dateslider.indexLowNumber = 0;
-    dateslider.indexHighNumber = sparkline.dataset.length-1;
+    dateslider.indexHighNumber = dailytrendline.dataset.length-1;
 
     // Initial draw
     dateslider.redraw();
+    dailytrendline.draw("#dailytrend1", "all_collisions");
 
     log("Done Loading.", "dailytrendline.loadCSV" + ": " + filename);
    
@@ -340,28 +351,34 @@ sparkline.draw = function(id, attribute)
   log("Drawing: " + attribute, "sparkline.draw");
 
   // Domain with y inverted
-  var x = d3.scale.linear().range([0, sparkline.width]);
-  var y = d3.scale.linear().range([sparkline.height, 0]);
-
-
-  // Create the line 
-  // Changed the line to linear because basis distorted the ends and made it difficult
-  // to see the difference from high and low comparing numbers
-  // https://github.com/mbostock/d3/wiki/SVG-Shapes#line_interpolate
-  var line = d3.svg.line()
-      .interpolate("linear")
-      .x(function(d) { return x(d.index); })
-      .y(function(d) { return y(d[attribute]); });
-
-
-  // Set up the domain based on the date slider
-  // x.domain(d3.extent(sparkline.dataset, function(d) { return d.index; }));
+  var x = d3.scale.linear().range([0, sparkline.width - sparkline.top]);
+  var y = d3.scale.linear().range([sparkline.height - sparkline.left, 0]);
 
   x.domain([0,selectedIndex]);
   y.domain([0, d3.max(sparkline.dataset, function(d) { return d[attribute]; })]);
 
+
+  // Create the line 
+  var line = d3.svg.line()
+      .interpolate("linear")
+      // .interpolate("basis")
+      .x(function(d) { return x(d.index); })
+      .y(function(d) { return y(d[attribute]); });
+
+  // Set the color of the trend line based on start and end 
+  dataMin = d3.min(sparkline.dataset, function(d) { return d[attribute]; });
+  dataMax = d3.max(sparkline.dataset, function(d) { return d[attribute]; });
+
+  //TODO: Ask Alex if he wants the sparkline color to change
+  // var trendcolor = (sparkline.dataset[dataMin][attribute] >= sparkline.dataset[dataMax][attribute] ? "sparkline color_decreasing" : "sparkline color_increasing");
+  // log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute], "sparkline.draw");  
+
+  trendcolor = "sparkline color_black";
+
   // Remove the existing svg then draw
   d3.select(id).select("svg").remove();
+
+
 
   // Redraw the svg
   var svg = d3.select(id).append("svg")
@@ -371,21 +388,17 @@ sparkline.draw = function(id, attribute)
         .attr("transform", "translate(" + sparkline.left + "," + sparkline.top + ")");
 
 
-  // Set the color of the trend line based on start and end 
-  dataMin = d3.min(sparkline.dataset, function(d) { return d[attribute]; });
-  dataMax = d3.max(sparkline.dataset, function(d) { return d[attribute]; });
-  
-  //TODO: Ask Alex if he wants the sparkline color to change
-  // var trendcolor = (sparkline.dataset[dataMin][attribute] >= sparkline.dataset[dataMax][attribute] ? "sparkline color_decreasing" : "sparkline color_increasing");
-  // log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute], "sparkline.draw");  
-
-  trendcolor = "sparkline color_black";
-
   // Draw the trend line
   svg.append("path")
       .datum(sparkline.dataset)
       .attr("class", trendcolor)
       .attr("d", line);
+
+  // svg.append('circle')
+  //    .attr('class', 'sparkcircle')
+  //    .attr('cx', x(selectedIndex))
+  //    .attr('cy', y( sparkline.dataset[146][attribute] ))
+  //    .attr('r', 2.5);
 }
 
 
@@ -406,17 +419,18 @@ sparkline.draw = function(id, attribute)
 */
 dailytrendline.draw = function(id, attribute)
 {
-  log("Drawing: " + attribute, "sparkline.draw");
+  log("Drawing: " + attribute, "dailytrendline.draw");
 
-  // Domain with y inverted
-  var x = d3.scale.linear().range([0, sparkline.width]);
-  var y = d3.scale.linear().range([sparkline.height, 0]);
+  
+
+  // Scales and axes. Note the inverted domain for the y-scale: bigger is up!
+  var x = d3.time.scale().range([0, dailytrendline.width]),
+      y = d3.scale.linear().range([dailytrendline.height, 0]),
+      xAxis = d3.svg.axis().scale(x).tickSize(-dailytrendline.height).tickSubdivide(true),
+      yAxis = d3.svg.axis().scale(y).ticks(4).orient("right");
 
 
   // Create the line 
-  // Changed the line to linear because basis distorted the ends and made it difficult
-  // to see the difference from high and low comparing numbers
-  // https://github.com/mbostock/d3/wiki/SVG-Shapes#line_interpolate
   var line = d3.svg.line()
       .interpolate("linear")
       .x(function(d) { return x(d.date); })
@@ -426,30 +440,49 @@ dailytrendline.draw = function(id, attribute)
   // Set up the domain based on the date slider
   // TODO: This might be able to get replaced and not use d3.extent
   // TODO: x.domain([parseDate(tMin), parseDate(tMax)] );
-  x.domain(d3.extent( [parseDate(tMin), parseDate(tMax)] ));
-  y.domain([0, d3.max(sparkline.dataset, function(d) { return d[attribute]; })]);  
+  x.domain([parseDate(tMin), parseDate(tMax)]);
+  y.domain([0, d3.max(dailytrendline.dataset, function(d) { return d[attribute]; })]);  
+
+  // An area generator, for the light fill.
+var area = d3.svg.area()
+    .interpolate("monotone")
+    .x(function(d) { return x(d.date); })
+    .y0(dailytrendline.height)
+    .y1(function(d) { return y(d[attribute]); });
+
+  // Set the color of the trend line based on start and end 
+  var trendcolor = (dailytrendline.dataset[dateslider.indexLow][attribute] >= dailytrendline.dataset[dateslider.indexHigh][attribute]) ? "sparkline area_decreasing" : "sparkline area_increasing";
+  // log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute], "sparkline.draw");  
 
   // Remove the existing svg then draw
   d3.select(id).select("svg").remove();
 
   // Redraw the svg
   var svg = d3.select(id).append("svg")
-        .attr("width", sparkline.width + sparkline.left + sparkline.right)
-        .attr("height", sparkline.height + sparkline.top + sparkline.bottom)
+        .attr("width", dailytrendline.width + dailytrendline.left + dailytrendline.right)
+        .attr("height", dailytrendline.height + dailytrendline.top + dailytrendline.bottom)
         .append("g")
-        .attr("transform", "translate(" + sparkline.left + "," + sparkline.top + ")");
-
-
-  // Set the color of the trend line based on start and end 
-  var trendcolor = (sparkline.dataset[dateslider.indexLow][attribute] >= sparkline.dataset[dateslider.indexHigh][attribute]) ? "sparkline decreasing" : "sparkline increasing";
-  // log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute], "sparkline.draw");  
+        // .attr("transform", "translate(" + dailytrendline.left + "," + dailytrendline.top + ")");
+        .attr("transform", "translate(0,0)");
 
 
   // Draw the trend line
   svg.append("path")
-      .datum(sparkline.dataset)
+      .datum(dailytrendline.dataset)
       .attr("class", trendcolor)
-      .attr("d", line);
+      .attr("d", area);
+
+      // Add the x-axis.
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + dailytrendline.height + ")")
+      .call(xAxis);
+
+  // Add the y-axis.
+  svg.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + dailytrendline.width + ",0)")
+      .call(yAxis);
 }
 
 
@@ -471,6 +504,7 @@ dailytrendline.draw = function(id, attribute)
 */
 dateslider.redraw = function()
 {
+  log("Loading Date Slider", "dateslider.redraw");
   $(function() {
       $( "#slider-range" ).slider({
         range: true,
@@ -504,7 +538,7 @@ dateslider.redraw = function()
           $( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
           
           // Draw after all calculations
-          sparkline.redraw();
+          dailytrendline.draw("#dailytrend1", "all_collisions");
           //barchart.redraw();
         } //END: Slide
 
