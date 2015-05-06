@@ -81,13 +81,12 @@ var dailytrendline = {
   right: 10,
   top: 10,
   bottom: 10,
-  daily_attribute: "all_collisions",
 }
 
 dailytrendline.dataset = [];
 
-dailytrendline.width = 900 - dailytrendline.left - dailytrendline.right,
-dailytrendline.height = 300 - dailytrendline.top - dailytrendline.bottom;
+dailytrendline.width = 950 - dailytrendline.left - dailytrendline.right,
+dailytrendline.height = 100 - dailytrendline.top - dailytrendline.bottom;
 
 
 
@@ -270,8 +269,6 @@ sparkline.loadCSV = function(filename)
 */
 sparkline.redraw = function()
 {
-  // TODO: create an object for this information.
-  // TODO: call each in a loop
   sparkline.draw("#sparkline1","all_collisions");
   sparkline.draw("#sparkline2","injury_collisions");
   sparkline.draw("#sparkline3","fatal_collisions");
@@ -406,7 +403,7 @@ dailytrendline.loadCSV = function(filename)
 
     // Initial draw
     dateslider.redraw();
-    dailytrendline.draw("#dailytrend1", dailytrendline.daily_attribute);
+    dailytrendline.redraw();
 
     log("Done Loading.", "dailytrendline.loadCSV" + ": " + filename);
    
@@ -499,6 +496,18 @@ var area = d3.svg.area()
 
 
 
+/*  Redraw all of the daily trend lines
+ *  @param:  None
+ *  @return: None
+*/
+dailytrendline.redraw = function()
+{
+  dailytrendline.draw("#dailytrend1","all_collisions");
+  dailytrendline.draw("#dailytrend2","injury_collisions");
+  dailytrendline.draw("#dailytrend3","fatal_collisions");
+}
+
+
 
 
 
@@ -549,7 +558,7 @@ dateslider.redraw = function()
           $( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
           
           // Draw after all calculations
-          dailytrendline.draw("#dailytrend1", dailytrendline.daily_attribute);
+          dailytrendline.redraw();
           //barchart.redraw();
         } //END: Slide
 
