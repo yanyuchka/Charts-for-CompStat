@@ -77,15 +77,16 @@ var dailytrendline = {
   csvFileExtension: ".csv",
   width: 0,
   height: 0,
-  left: 10,
+  left: 30,
   right: 10,
   top: 10,
   bottom: 10,
+  daily_attribute: "all_collisions",
 }
 
 dailytrendline.dataset = [];
 
-dailytrendline.width = 1000 - dailytrendline.left - dailytrendline.right,
+dailytrendline.width = 900 - dailytrendline.left - dailytrendline.right,
 dailytrendline.height = 300 - dailytrendline.top - dailytrendline.bottom;
 
 
@@ -206,6 +207,13 @@ function initDropdownDates()
 
 
 
+
+//---------------------------------------------------------------------------------//
+//                                    SPARK LINE
+//---------------------------------------------------------------------------------//
+
+
+
 /*  Load the CSV current file
  *  @param:  string   Filename and direcotry of the current CSV file selected from the dropdown
  *  @return: None
@@ -250,68 +258,6 @@ sparkline.loadCSV = function(filename)
    
   }); //d3.csv
 } //sparkline.loadCSV
-
-
-
-
-
-
-
-
-
-
-/*  Load the CSV current file
- *  @param:  string   Filename and direcotry of the current CSV file selected from the dropdown
- *  @return: None
-*/
-dailytrendline.loadCSV = function(filename)
-{
-  log("Loading Dailytrendline CSV.", "sparkline.loadCSV" + ": " + filename);
-  // Clear the dataset and date array
-  dailytrendline.dataset = [];
-  dateslider.dateArray = [];
-
-  
-  // Load daily trendline dataset
-  // Load date slider dataset
-  d3.csv(filename,
-    function(error, data) {            
-        data.forEach(function(d,i)
-        {
-          dailytrendline.dataset.push({
-            precinct: +d.precinct,
-            date: parseDate(d.date),
-            
-            all_collisions: +d.all_collisions,
-            injury_collisions: +d.injury_collisions,
-            fatal_collisions: +d.fatal_collisions,
-            
-          })
-
-          // Add the dates to its own array for the timeline slider
-          dateslider.dateArray.push(d.date);
-    
-    }); //data.forEach
-    
-    dateslider.indexLow = 0;
-    dateslider.indexHigh = dailytrendline.dataset.length-1;
-    dateslider.indexLowNumber = 0;
-    dateslider.indexHighNumber = dailytrendline.dataset.length-1;
-
-    // Initial draw
-    dateslider.redraw();
-    dailytrendline.draw("#dailytrend1", "all_collisions");
-
-    log("Done Loading.", "dailytrendline.loadCSV" + ": " + filename);
-   
-  }); //d3.csv
-} //dailytrendline.loadCSV
-
-
-
-
-
-
 
 
 
@@ -413,6 +359,67 @@ sparkline.draw = function(id, attribute)
 
 
 
+
+//---------------------------------------------------------------------------------//
+//                                   DAILY TREND LINE
+//---------------------------------------------------------------------------------//
+
+
+
+/*  Load the CSV current file
+ *  @param:  string   Filename and direcotry of the current CSV file selected from the dropdown
+ *  @return: None
+*/
+dailytrendline.loadCSV = function(filename)
+{
+  log("Loading Dailytrendline CSV.", "sparkline.loadCSV" + ": " + filename);
+  // Clear the dataset and date array
+  dailytrendline.dataset = [];
+  dateslider.dateArray = [];
+
+  
+  // Load daily trendline dataset
+  // Load date slider dataset
+  d3.csv(filename,
+    function(error, data) {            
+        data.forEach(function(d,i)
+        {
+          dailytrendline.dataset.push({
+            precinct: +d.precinct,
+            date: parseDate(d.date),
+            
+            all_collisions: +d.all_collisions,
+            injury_collisions: +d.injury_collisions,
+            fatal_collisions: +d.fatal_collisions,
+            
+          })
+
+          // Add the dates to its own array for the timeline slider
+          dateslider.dateArray.push(d.date);
+    
+    }); //data.forEach
+    
+    dateslider.indexLow = 0;
+    dateslider.indexHigh = dailytrendline.dataset.length-1;
+    dateslider.indexLowNumber = 0;
+    dateslider.indexHighNumber = dailytrendline.dataset.length-1;
+
+    // Initial draw
+    dateslider.redraw();
+    dailytrendline.draw("#dailytrend1", dailytrendline.daily_attribute);
+
+    log("Done Loading.", "dailytrendline.loadCSV" + ": " + filename);
+   
+  }); //d3.csv
+} //dailytrendline.loadCSV
+
+
+
+
+
+
+
+
 /*  Draw the daily trend line
  *  @param:  string    id of the div
  *  @return: None
@@ -421,13 +428,18 @@ dailytrendline.draw = function(id, attribute)
 {
   log("Drawing: " + attribute, "dailytrendline.draw");
 
-  
 
   // Scales and axes. Note the inverted domain for the y-scale: bigger is up!
-  var x = d3.time.scale().range([0, dailytrendline.width]),
-      y = d3.scale.linear().range([dailytrendline.height, 0]),
-      xAxis = d3.svg.axis().scale(x).tickSize(-dailytrendline.height).tickSubdivide(true),
-      yAxis = d3.svg.axis().scale(y).ticks(4).orient("right");
+  var x = d3.time.scale()
+            .domain([parseDate(tMin), parseDate(tMax)])
+            .range([0, dailytrendline.width+dailytrendline.right+dailytrendline.left]);
+      
+      y = d3.scale.linear()
+            .domain([0, d3.max(dailytrendline.dataset, function(d) { return d[attribute]; })])
+            .range([dailytrendline.height, 0]);
+
+      xAxis = d3.svg.axis().scale(x).tickSize(-dailytrendline.height).tickSubdivide(true).orient("bottom"),
+      yAxis = d3.svg.axis().scale(y).ticks(4).orient("left");
 
 
   // Create the line 
@@ -437,11 +449,6 @@ dailytrendline.draw = function(id, attribute)
       .y(function(d) { return y(d[attribute]); });
 
 
-  // Set up the domain based on the date slider
-  // TODO: This might be able to get replaced and not use d3.extent
-  // TODO: x.domain([parseDate(tMin), parseDate(tMax)] );
-  x.domain([parseDate(tMin), parseDate(tMax)]);
-  y.domain([0, d3.max(dailytrendline.dataset, function(d) { return d[attribute]; })]);  
 
   // An area generator, for the light fill.
 var area = d3.svg.area()
@@ -451,19 +458,21 @@ var area = d3.svg.area()
     .y1(function(d) { return y(d[attribute]); });
 
   // Set the color of the trend line based on start and end 
-  var trendcolor = (dailytrendline.dataset[dateslider.indexLow][attribute] >= dailytrendline.dataset[dateslider.indexHigh][attribute]) ? "sparkline area_decreasing" : "sparkline area_increasing";
+  // var trendcolor = (dailytrendline.dataset[dateslider.indexLow][attribute] >= dailytrendline.dataset[dateslider.indexHigh][attribute]) ? "sparkline area_decreasing" : "sparkline area_increasing";
   // log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute], "sparkline.draw");  
 
+  var trendcolor = "sparkline area_increasing";
+  
   // Remove the existing svg then draw
   d3.select(id).select("svg").remove();
 
   // Redraw the svg
   var svg = d3.select(id).append("svg")
-        .attr("width", dailytrendline.width + dailytrendline.left + dailytrendline.right)
-        .attr("height", dailytrendline.height + dailytrendline.top + dailytrendline.bottom)
+        .attr("width", dailytrendline.width + dailytrendline.left+dailytrendline.left + 1 + dailytrendline.right)
+        .attr("height", dailytrendline.height + (dailytrendline.top*2) + dailytrendline.bottom)
         .append("g")
-        // .attr("transform", "translate(" + dailytrendline.left + "," + dailytrendline.top + ")");
-        .attr("transform", "translate(0,0)");
+        .attr("transform", "translate(" + dailytrendline.left + "," + dailytrendline.top + ")");
+        
 
 
   // Draw the trend line
@@ -481,7 +490,7 @@ var area = d3.svg.area()
   // Add the y-axis.
   svg.append("g")
       .attr("class", "y axis")
-      .attr("transform", "translate(" + dailytrendline.width + ",0)")
+      .attr("transform", "translate(0,0)")
       .call(yAxis);
 }
 
@@ -495,7 +504,9 @@ var area = d3.svg.area()
 
 
 
-
+//---------------------------------------------------------------------------------//
+//                                  DATE SLIDER
+//---------------------------------------------------------------------------------//
 
 
 /*  Draw the date timeline slider
@@ -538,7 +549,7 @@ dateslider.redraw = function()
           $( "#date-range" ).val( "  " + tMin + "  -  " + tMax );
           
           // Draw after all calculations
-          dailytrendline.draw("#dailytrend1", "all_collisions");
+          dailytrendline.draw("#dailytrend1", dailytrendline.daily_attribute);
           //barchart.redraw();
         } //END: Slide
 
@@ -624,6 +635,11 @@ dateslider.initButtons = function()
 
 
 
+
+
+//---------------------------------------------------------------------------------//
+//                                     BAR CHART
+//---------------------------------------------------------------------------------//
 
 
 
