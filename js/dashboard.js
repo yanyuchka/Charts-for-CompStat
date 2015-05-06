@@ -458,7 +458,8 @@ var area = d3.svg.area()
   // var trendcolor = (dailytrendline.dataset[dateslider.indexLow][attribute] >= dailytrendline.dataset[dateslider.indexHigh][attribute]) ? "sparkline area_decreasing" : "sparkline area_increasing";
   // log(sparkline.dataset[dateslider.indexLow][attribute] + " >= " + sparkline.dataset[dateslider.indexHigh][attribute], "sparkline.draw");  
 
-  var trendcolor = "large_trend_line area_increasing";
+  // var trendcolor = "large_trend_line area_increasing";
+  var trendcolor = "large_trend_line color_black";
   
   // Remove the existing svg then draw
   d3.select(id).select("svg").remove();
