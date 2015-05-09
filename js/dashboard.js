@@ -1,4 +1,4 @@
-:w /*
+/*
 *   Filename: dashboard.js
 */
 
@@ -435,12 +435,14 @@ sparkline.draw2 = function(filename)
           pedestrians_involved = +d.pedestrians_involved;
         });
 
-        console.log(data);
 
         cf = crossfilter(data);
         cf_time_dim = cf.dimension( function(d){ return d.ts } );
         cf_all_collisions_group = cf_time_dim.group().reduceSum( function(d){ return d.all_collisions});
         cf_injures_group = cf_time_dim.group().reduceSum( function(d){ return d.injures } );
+
+        var selectedIndex = 0;
+        console.log(d.ts);        
 
         sparkline1
         .width(400)
