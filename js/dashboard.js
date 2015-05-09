@@ -34,6 +34,12 @@ sparkline.width = 150 - sparkline.left - sparkline.right,
 sparkline.height = 25 - sparkline.top - sparkline.bottom;
 
 
+var cfsparkline = {
+  dataset: null,
+  draw: null,
+  loadCSV: null,
+}
+
 
 
 // --- Date Slider Global Variables
@@ -160,8 +166,9 @@ function initDashboard()
 
   // Load the Spark Line Dataset
   sparkline.loadCSV(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
-  sparkline.draw2(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
- 
+
+  // Load the CF Spark Line Dataset
+  cfsparkline.loadCSV(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
   
   // Load the Daily Trend Line Dataset
   // dailytrendline.loadCSV(dailytrendline.csvFileDirectory + dailytrendline.csvFileName + initialPrecinct + dailytrendline.csvFileExtension);
@@ -193,7 +200,9 @@ function initPrecinctSelect()
 
     // Load the Spark Line Dataset
     sparkline.loadCSV(sparkline.csvFileDirectory + sparkline.csvFileName + csvFileNumber + sparkline.csvFileExtension);
-    sparkline.draw2(sparkline.csvFileDirectory + sparkline.csvFileName + csvFileNumber + sparkline.csvFileExtension);
+
+    // Load the CF Spark Line Dataset
+    cfsparkline.loadCSV(sparkline.csvFileDirectory + sparkline.csvFileName + csvFileNumber + sparkline.csvFileExtension);
  
 
     log("Loading Precinct: " + csvFileNumber, "initPrecinctSelect");
@@ -211,6 +220,7 @@ function initPrecinctSelect()
 */
 function initDropdownDates()
 {  
+  console.log("init dates");
   // Append each of the dates to the dropdown
   sparkline.dataset.forEach(function(d){$( "<option value=\"" + d.index + "\">" + d.label + "</option>" ).appendTo( $( "#select_dates" ) );});
   
@@ -245,6 +255,9 @@ function initDropdownDates()
     var first_date = sparkline.dataset[selectedIndex].label.slice(0,10);
     var second_date = sparkline.dataset[selectedIndex].label.slice(19,30);
 
+    console.log(first_date);
+    console.log(second_date);
+    
     // Display the report dates at the top label
     $( "#date-range" ).val(first_date + " - " + second_date);
     selectedDate = parseDate(second_date);
@@ -255,7 +268,7 @@ function initDropdownDates()
 
     // Redraw all sparklines
     // sparkline.redraw();
-    sparkline.draw2(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
+    cfsparkline.loadCSV(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
     largetrendline.redraw();
   });
 
@@ -393,9 +406,49 @@ sparkline.draw = function(id, attribute)
 }
 
 
-sparkline.draw2 = function(filename)
+
+cfsparkline.loadCSV = function(filename)
 {
-  console.log("draw2");
+
+  cfsparkline.dataset = [];
+
+  d3.csv(filename, function(error, d){
+        cfsparkline.dataset = d;
+
+        formatWeek = d3.time.format("%Y %U");
+        formatDate = d3.time.format("%Y-%m-%d");
+
+        // year,week,precinct,label,all_collisions,injury_collisions,fatal_collisions,injures,fatalities,cyclists_involved,pedestrians_involved,index
+        // 2012,26,1,2012-06-25 through 2012-07-01,7,0,0,0,0,0,0,0
+        // 2012,27,1,2012-07-02 through 2012-07-08,61,9,0,11,0,4,5,1
+        cfsparkline.dataset.forEach(function(d){
+          d.first_day      = d.label.substr(0,10);
+          d.ts             = formatDate.parse( d.first_day );
+          d.year           = +d.year;
+          d.week           = +d.week;
+          d.index          = +d.index;
+          d.all_collisions = +d.all_collisions;
+          d.injury_collisions = +d.injury_collisions;
+          d.fatal_collisions = +d.fatal_collisions;
+          d.injures      = +d.injures;
+          fatalities      = +d.fatalities;
+          cyclists_involved =  +d.cyclists_involved;
+          pedestrians_involved = +d.pedestrians_involved;
+
+          // TODO: Olga look at this
+          d.date = parseDate(d.label.slice(19,30));
+        });
+
+        cfsparkline.draw()
+    });
+}
+
+
+
+
+cfsparkline.draw = function()
+{
+  log("Drawing CF Sparkilne.", "cfsparkline.draw");
 
   //list = ["csv/pcts/collisions_1.csv",
   //    "csv/pcts/collisions_5.csv"];
@@ -409,44 +462,48 @@ sparkline.draw2 = function(filename)
       var sparkline2 = dc.lineChart('#sparkline2');
 
       
-      var data,cf,cf_time_dim,cf_all_collisions_group, cf_injures_group;
+      var cf,cf_time_dim,cf_all_collisions_group, cf_injures_group;
 
-      d3.csv(filename, function(error, d){
-        data = d;
+      // d3.csv(filename, function(error, d){
+      //   data = d;
 
-        formatWeek = d3.time.format("%Y %U");
-        formatDate = d3.time.format("%Y-%m-%d");
+      //   formatWeek = d3.time.format("%Y %U");
+      //   formatDate = d3.time.format("%Y-%m-%d");
 
         // year,week,precinct,label,all_collisions,injury_collisions,fatal_collisions,injures,fatalities,cyclists_involved,pedestrians_involved,index
         // 2012,26,1,2012-06-25 through 2012-07-01,7,0,0,0,0,0,0,0
         // 2012,27,1,2012-07-02 through 2012-07-08,61,9,0,11,0,4,5,1
-        data.forEach(function(d){
-          d.first_day      = d.label.substr(0,10);
-          d.ts             = formatDate.parse( d.first_day );
-          d.year           = +d.year;
-          d.week           = +d.week;
-          d.index          = +d.index;
-          d.all_collisions = +d.all_collisions;
-          d.injury_collisions = +d.injury_collisions;
-          d.fatal_collisions = +d.fatal_collisions;
-          d.injures 	   = +d.injures;
-          fatalities      = +d.fatalities;
-          cyclists_involved =  +d.cyclists_involved;
-          pedestrians_involved = +d.pedestrians_involved;
-        });
+        // data.forEach(function(d){
+        //   d.first_day      = d.label.substr(0,10);
+        //   d.ts             = formatDate.parse( d.first_day );
+        //   d.year           = +d.year;
+        //   d.week           = +d.week;
+        //   d.index          = +d.index;
+        //   d.all_collisions = +d.all_collisions;
+        //   d.injury_collisions = +d.injury_collisions;
+        //   d.fatal_collisions = +d.fatal_collisions;
+        //   d.injures 	   = +d.injures;
+        //   fatalities      = +d.fatalities;
+        //   cyclists_involved =  +d.cyclists_involved;
+        //   pedestrians_involved = +d.pedestrians_involved;
+        // });
 
-        console.log(data);
 
-        cf = crossfilter(data);
+        cf = crossfilter(cfsparkline.dataset);
         cf_time_dim = cf.dimension( function(d){ return d.ts } );
         cf_all_collisions_group = cf_time_dim.group().reduceSum( function(d){ return d.all_collisions});
         cf_injures_group = cf_time_dim.group().reduceSum( function(d){ return d.injures } );
+
+
+        // .domain(d3.extent(sparkline.dataset, function(d) { return d.date;}))
+
 
         sparkline1
         .width(400)
         .height(100)
         //make it adjusted
         .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
+        // .x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.date;}))
         //cheating
         .margins({top: 0, right: 0, bottom: -1, left: -1})
         .dimension(cf_time_dim)
@@ -456,6 +513,7 @@ sparkline.draw2 = function(filename)
         .width(400)
         .height(100)
         .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
+        // .x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.date;}))
         .margins({top: 0, right: 0, bottom: -1, left: -1})
         .dimension(cf_time_dim)
         .group(cf_injures_group);
@@ -465,6 +523,7 @@ sparkline.draw2 = function(filename)
         .height(200)
         .mouseZoomable(true)
         .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
+        // .x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.date;}))
         .xUnits(d3.time.week)
         .elasticY(true)
         .renderHorizontalGridLines(true)
@@ -488,8 +547,6 @@ sparkline.draw2 = function(filename)
 
         
         dc.renderAll();
-
-      })
    
 }
 
