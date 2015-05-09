@@ -176,7 +176,7 @@ function initDashboard()
  *  @param:  None
  *  @return: None
 */
-function initPrecinctSelect() sparkline.draw2(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
+function initPrecinctSelect()
 {
 
   // Populate the precincts dropdown dynamically
@@ -312,7 +312,6 @@ sparkline.loadCSV = function(filename)
         // Add the week ending date to the dateArray
         sparkline.dateArray.push(parseDate(d.label.slice(19,30)));
     }); //data.forEach
-<script>initDashboard();</script>
     // Populate the dropdown with dates
     initDropdownDates();
 
@@ -443,11 +442,7 @@ sparkline.draw2 = function(filename)
         //make it adjusted
         .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
         //cheating
-        .margins({top: 0, right: 0, bottom: -1, left: -1})cf = crossfilter(data);
-        cf_time_dim = cf.dimension( function(d){ return d.ts } );
-        cf_all_collisions_group = cf_time_dim.group().reduceSum( function(d){ return d.all_collisions});
-        cf_injures_group = cf_time_dim.group().reduceSum( function(d){ return d.injures } );
-
+        .margins({top: 0, right: 0, bottom: -1, left: -1})
         .dimension(cf_time_dim)
         .group(cf_all_collisions_group);
 
