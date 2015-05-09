@@ -160,6 +160,8 @@ function initDashboard()
 
   // Load the Spark Line Dataset
   sparkline.loadCSV(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
+  sparkline.draw2(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
+ 
   
   // Load the Daily Trend Line Dataset
   // dailytrendline.loadCSV(dailytrendline.csvFileDirectory + dailytrendline.csvFileName + initialPrecinct + dailytrendline.csvFileExtension);
@@ -174,12 +176,13 @@ function initDashboard()
  *  @param:  None
  *  @return: None
 */
-function initPrecinctSelect()
+function initPrecinctSelect() sparkline.draw2(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
 {
 
   // Populate the precincts dropdown dynamically
   list_of_precincts.forEach(function(d){$( "<option value=\"" + d + "\">" + "Precinct: " + d + "</option>" ).appendTo( $( "#select_precincts" ) );});
 
+  // On-click
   $( "#select_precincts" ).change(function()
   {
     // Get the precinct value from the dropdown
@@ -190,6 +193,8 @@ function initPrecinctSelect()
 
     // Load the Spark Line Dataset
     sparkline.loadCSV(sparkline.csvFileDirectory + sparkline.csvFileName + csvFileNumber + sparkline.csvFileExtension);
+    sparkline.draw2(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
+ 
 
     log("Loading Precinct: " + csvFileNumber, "initPrecinctSelect");
   });
@@ -223,6 +228,18 @@ function initDropdownDates()
   // On-click
   $( "#select_dates" ).change(function(){
     selectedIndex = $("#select_dates").val();
+    
+    // Naive number filling
+    $("#group1 p.numbers").text(sparkline.dataset[selectedIndex]["all_collisions"]);
+    $("#group2 p.numbers").text(sparkline.dataset[selectedIndex]["injury_collisions"]);
+
+     /*sparkline.draw("#sparkline2","injury_collisions");
+    sparkline.draw("#sparkline3","fatal_collisions");
+    sparkline.draw("#sparkline4","injures");
+    sparkline.draw("#sparkline5","fatalities");
+    sparkline.draw("#sparkline6","cyclists_involved");
+    sparkline.draw("#sparkline7","pedestrians_involved");
+    */
 
     // Extract the first and second date from the label
     var first_date = sparkline.dataset[selectedIndex].label.slice(0,10);
@@ -295,7 +312,7 @@ sparkline.loadCSV = function(filename)
         // Add the week ending date to the dateArray
         sparkline.dateArray.push(parseDate(d.label.slice(19,30)));
     }); //data.forEach
-
+<script>initDashboard();</script>
     // Populate the dropdown with dates
     initDropdownDates();
 
@@ -327,13 +344,6 @@ sparkline.redraw = function()
   sparkline.draw("#sparkline6","cyclists_involved");
   sparkline.draw("#sparkline7","pedestrians_involved");
 }
-
-
-
-
-
-
-
 
 
 
@@ -382,6 +392,105 @@ sparkline.draw = function(id, attribute)
 }
 
 
+sparkline.draw2 = function(filename)
+{
+
+  //list = ["csv/pcts/collisions_1.csv",
+  //    "csv/pcts/collisions_5.csv"];
+
+   //   var filename = list[0];
+      var barChart1 = dc.barChart('#bar-chart1');
+      var barChart2 = dc.barChart('#bar-chart2');
+      var sparkline1 = dc.lineChart('#sparkline1');
+      var sparkline2 = dc.lineChart('#sparkline2');
+
+      
+      var data,cf,cf_time_dim,cf_all_collisions_group, cf_injures_group;
+
+      d3.csv(filename, function(error, d){
+        data = d;
+
+        formatWeek = d3.time.format("%Y %U");
+        formatDate = d3.time.format("%Y-%m-%d");
+
+        // year,week,precinct,label,all_collisions,injury_collisions,fatal_collisions,injures,fatalities,cyclists_involved,pedestrians_involved,index
+        // 2012,26,1,2012-06-25 through 2012-07-01,7,0,0,0,0,0,0,0
+        // 2012,27,1,2012-07-02 through 2012-07-08,61,9,0,11,0,4,5,1
+        data.forEach(function(d){
+          d.first_day      = d.label.substr(0,10);
+          d.ts             = formatDate.parse( d.first_day );
+          d.year           = +d.year;
+          d.week           = +d.week;
+          d.index          = +d.index;
+          d.all_collisions = +d.all_collisions;
+          d.injury_collisions = +d.injury_collisions;
+          d.fatal_collisions = +d.fatal_collisions;
+          d.injures 	   = +d.injures;
+          fatalities      = +d.fatalities;
+          cyclists_involved =  +d.cyclists_involved;
+          pedestrians_involved = +d.pedestrians_involved;
+        });
+
+
+        cf = crossfilter(data);
+        cf_time_dim = cf.dimension( function(d){ return d.ts } );
+        cf_all_collisions_group = cf_time_dim.group().reduceSum( function(d){ return d.all_collisions});
+        cf_injures_group = cf_time_dim.group().reduceSum( function(d){ return d.injures } );
+
+        sparkline1
+        .width(400)
+        .height(100)
+        //make it adjusted
+        .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
+        //cheating
+        .margins({top: 0, right: 0, bottom: -1, left: -1})cf = crossfilter(data);
+        cf_time_dim = cf.dimension( function(d){ return d.ts } );
+        cf_all_collisions_group = cf_time_dim.group().reduceSum( function(d){ return d.all_collisions});
+        cf_injures_group = cf_time_dim.group().reduceSum( function(d){ return d.injures } );
+
+        .dimension(cf_time_dim)
+        .group(cf_all_collisions_group);
+
+        sparkline2
+        .width(400)
+        .height(100)
+        .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
+        .margins({top: 0, right: 0, bottom: -1, left: -1})
+        .dimension(cf_time_dim)
+        .group(cf_injures_group);
+
+        barChart1
+        .width(500)
+        .height(200)
+        .mouseZoomable(true)
+        .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
+        .xUnits(d3.time.week)
+        .elasticY(true)
+        .renderHorizontalGridLines(true)
+        .brushOn(false)
+        .dimension(cf_time_dim)
+        .rangeChart(sparkline1)
+        .group(cf_all_collisions_group);
+
+        barChart2
+        .width(500)
+        .height(200)
+        .mouseZoomable(true)
+        .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
+        .xUnits(d3.time.week)
+        .elasticY(true)
+        .renderHorizontalGridLines(true)
+        .brushOn(false)
+        .dimension(cf_time_dim)
+        .rangeChart(sparkline2)
+        .group(cf_injures_group);
+
+        
+        dc.renderAll();
+
+      })
+   
+}
 
 
 
