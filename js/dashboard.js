@@ -176,7 +176,7 @@ function initDashboard()
  *  @param:  None
  *  @return: None
 */
-function initPrecinctSelect() sparkline.draw2(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
+function initPrecinctSelect()
 {
 
   // Populate the precincts dropdown dynamically
@@ -193,7 +193,7 @@ function initPrecinctSelect() sparkline.draw2(sparkline.csvFileDirectory + spark
 
     // Load the Spark Line Dataset
     sparkline.loadCSV(sparkline.csvFileDirectory + sparkline.csvFileName + csvFileNumber + sparkline.csvFileExtension);
-    sparkline.draw2(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
+    sparkline.draw2(sparkline.csvFileDirectory + sparkline.csvFileName + csvFileNumber + sparkline.csvFileExtension);
  
 
     log("Loading Precinct: " + csvFileNumber, "initPrecinctSelect");
@@ -254,7 +254,8 @@ function initDropdownDates()
     log("Loading Date: ", selectedIndex);
 
     // Redraw all sparklines
-    sparkline.redraw();
+    // sparkline.redraw();
+    sparkline.draw2(sparkline.csvFileDirectory + sparkline.csvFileName + initialPrecinct + sparkline.csvFileExtension);
     largetrendline.redraw();
   });
 
@@ -312,12 +313,13 @@ sparkline.loadCSV = function(filename)
         // Add the week ending date to the dateArray
         sparkline.dateArray.push(parseDate(d.label.slice(19,30)));
     }); //data.forEach
-<script>initDashboard();</script>
+    
+    //initDashboard();
     // Populate the dropdown with dates
     initDropdownDates();
 
     // Initial draw
-    sparkline.redraw();
+    // sparkline.redraw();
     largetrendline.redraw();
 
     log("Done Loading.", "sparkline.loadCSV" + ": " + filename);
@@ -388,19 +390,21 @@ sparkline.draw = function(id, attribute)
        .attr('cx', x(selectedDate))
        .attr('cy', y(sparkline.dataset[selectedIndex][attribute]))
        .attr('r', 1.5);  
-       console.log(selectedIndex);
 }
 
 
 sparkline.draw2 = function(filename)
 {
+  console.log("draw2");
 
   //list = ["csv/pcts/collisions_1.csv",
   //    "csv/pcts/collisions_5.csv"];
 
    //   var filename = list[0];
-      var barChart1 = dc.barChart('#bar-chart1');
-      var barChart2 = dc.barChart('#bar-chart2');
+
+
+      var barChart1 = dc.lineChart('#bar-chart1');
+      var barChart2 = dc.lineChart('#bar-chart2');
       var sparkline1 = dc.lineChart('#sparkline1');
       var sparkline2 = dc.lineChart('#sparkline2');
 
@@ -431,6 +435,7 @@ sparkline.draw2 = function(filename)
           pedestrians_involved = +d.pedestrians_involved;
         });
 
+        console.log(data);
 
         cf = crossfilter(data);
         cf_time_dim = cf.dimension( function(d){ return d.ts } );
@@ -443,11 +448,7 @@ sparkline.draw2 = function(filename)
         //make it adjusted
         .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
         //cheating
-        .margins({top: 0, right: 0, bottom: -1, left: -1})cf = crossfilter(data);
-        cf_time_dim = cf.dimension( function(d){ return d.ts } );
-        cf_all_collisions_group = cf_time_dim.group().reduceSum( function(d){ return d.all_collisions});
-        cf_injures_group = cf_time_dim.group().reduceSum( function(d){ return d.injures } );
-
+        .margins({top: 0, right: 0, bottom: -1, left: -1})
         .dimension(cf_time_dim)
         .group(cf_all_collisions_group);
 
