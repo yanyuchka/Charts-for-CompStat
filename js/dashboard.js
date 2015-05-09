@@ -1,4 +1,4 @@
- /*
+:w /*
 *   Filename: dashboard.js
 */
 
@@ -326,8 +326,8 @@ sparkline.loadCSV = function(filename)
         // Add the week ending date to the dateArray
         sparkline.dateArray.push(parseDate(d.label.slice(19,30)));
     }); //data.forEach
-    
-    //initDashboard();
+
+
     // Populate the dropdown with dates
     initDropdownDates();
 
