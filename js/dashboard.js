@@ -212,8 +212,6 @@ function initPrecinctSelect()
 }
 
 
-
-
 /*  Initialize and populate the dropdown dates
  *  @param:  None
  *  @return: None
@@ -255,8 +253,6 @@ function initDropdownDates()
     var first_date = sparkline.dataset[selectedIndex].label.slice(0,10);
     var second_date = sparkline.dataset[selectedIndex].label.slice(19,30);
 
-    console.log(first_date);
-    console.log(second_date);
     
     // Display the report dates at the top label
     $( "#date-range" ).val(first_date + " - " + second_date);
@@ -264,7 +260,7 @@ function initDropdownDates()
 
 
     // TODO: make this show the actual date being loaded, not the index number
-    log("Loading Date: ", selectedIndex);
+    console.log(selectedIndex)
 
     // Redraw all sparklines
     // sparkline.redraw();
@@ -277,7 +273,7 @@ function initDropdownDates()
 
 
 
-
+console.log(selectedIndex);
 
 
 
@@ -492,24 +488,22 @@ cfsparkline.draw = function()
         cf = crossfilter(cfsparkline.dataset);
         cf_time_dim = cf.dimension( function(d){ return d.ts } );
         cf_all_collisions_group = cf_time_dim.group().reduceSum( function(d){ return d.all_collisions});
-        cf_injures_group = cf_time_dim.group().reduceSum( function(d){ return d.injures } );
+        cf_injures_group = cf_time_dim.group().reduceSum( function(d){ return d.injures } );      
 
-        var selectedIndex = 0;
-        console.log(d.ts);       
-
-        // .domain(d3.extent(sparkline.dataset, function(d) { return d.date;}))
-
+        
+        var first_date = cfsparkline.dataset[selectedIndex].ts;
+        
         sparkline1
         .width(400)
         .height(100)
         //make it adjusted
-        .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
-        // .x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.date;}))
+        .x(d3.time.scale().domain([new Date(2012,06,25), first_date]))
+        //.x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.date;})))
         //cheating
         .margins({top: 0, right: 0, bottom: -1, left: -1})
         .dimension(cf_time_dim)
         .group(cf_all_collisions_group);
-
+  
         sparkline2
         .width(400)
         .height(100)
@@ -520,18 +514,45 @@ cfsparkline.draw = function()
         .group(cf_injures_group);
 
         barChart1
-        .width(500)
-        .height(200)
+	.width(960)
+    	.height(150)
+    	.margins({top: 10, right: 10, bottom: 20, left: 40})
+    	.dimension(cf_time_dim)
+        .rangeChart(sparkline1)
+        .group(cf_all_collisions_group)
+        .transitionDuration(500)
+        .brushOn(false)
+        .title(cfsparkline.dataset,function(d){
+           return d.label;})
+             //+ "\nNumber of Incidents: " + d.all_collisions;})
+        .elasticY(true)
+        .x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.ts;})))
+        .xUnits(d3.time.week)
+        .xAxis();
+
+
+          /*
+
+        .width(600)
+        .height(300)
         .mouseZoomable(true)
-        .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
-        // .x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.date;}))
+        //.x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
+        .x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.ts;})))
         .xUnits(d3.time.week)
         .elasticY(true)
         .renderHorizontalGridLines(true)
         .brushOn(false)
         .dimension(cf_time_dim)
         .rangeChart(sparkline1)
-        .group(cf_all_collisions_group);
+        .group(cf_all_collisions_group)
+        .title(function(d){
+           return cfsparkline.dataset.label
+             + "\nNumber of Incidents: " + cfsparkline.dataset.all_collisions;
+         });
+        //.renderlet(function (chart) {
+        // rotate x-axis labels
+        //   chart.selectAll('g.x text')
+        //      .attr('transform', 'translate(-10,10) rotate(315)');}); */
 
         barChart2
         .width(500)
@@ -548,6 +569,15 @@ cfsparkline.draw = function()
 
         
         dc.renderAll();
+
+        var svg = sparkline1.svg();
+       
+        svg.append('circle')
+          .attr('class', 'sparkcircle')
+          .attr('cx', 20)
+          .attr('cy', 100)
+          .attr('r', 3);  
+
    
 }
 
