@@ -231,15 +231,23 @@ function initDropdownDates()
   // Set the current date range to the most recent date
   $( "#select_dates").val(d3.max(sparkline.dataset, function(d){return d.index;}));
 
-
+  $("#group1 p.numbers").text(sparkline.dataset[selectedIndex]["all_collisions"]);
+  $("#group4 p.numbers").text(sparkline.dataset[selectedIndex]["injures"]);
+  $("#group5 p.numbers").text(sparkline.dataset[selectedIndex]["fatalities"]);
+  $("#group6 p.numbers").text(sparkline.dataset[selectedIndex]["cyclists_involved"]);
 
   // On-click
   $( "#select_dates" ).change(function(){
     selectedIndex = $("#select_dates").val();
     
+
+    
     // Naive number filling
     $("#group1 p.numbers").text(sparkline.dataset[selectedIndex]["all_collisions"]);
-    $("#group2 p.numbers").text(sparkline.dataset[selectedIndex]["injury_collisions"]);
+    $("#group4 p.numbers").text(sparkline.dataset[selectedIndex]["injures"]);
+    $("#group5 p.numbers").text(sparkline.dataset[selectedIndex]["fatalities"]);
+    $("#group6 p.numbers").text(sparkline.dataset[selectedIndex]["cyclists_involved"]);
+
 
      /*sparkline.draw("#sparkline2","injury_collisions");
     sparkline.draw("#sparkline3","fatal_collisions");
@@ -430,11 +438,8 @@ cfsparkline.loadCSV = function(filename)
           fatalities      = +d.fatalities;
           cyclists_involved =  +d.cyclists_involved;
           pedestrians_involved = +d.pedestrians_involved;
-
-          // TODO: Olga look at this
-          d.date = parseDate(d.label.slice(19,30));
         });
-        cfsparkline.draw()
+        cfsparkline.draw();
     });
 }
 
@@ -452,13 +457,17 @@ cfsparkline.draw = function()
    //   var filename = list[0];
 
 
-      var barChart1 = dc.lineChart('#bar-chart1');
-      var barChart2 = dc.lineChart('#bar-chart2');
+      var lineChart1 = dc.lineChart('#line-chart1');
+      var lineChart2 = dc.lineChart('#line-chart2');
+      var lineChart3 = dc.lineChart('#line-chart3');
       var sparkline1 = dc.lineChart('#sparkline1');
-      var sparkline2 = dc.lineChart('#sparkline2');
+      var sparkline4 = dc.lineChart('#sparkline4');
+      var sparkline5 = dc.lineChart('#sparkline5');
+      var sparkline6 = dc.lineChart('#sparkline6');
+
 
       
-      var cf,cf_time_dim,cf_all_collisions_group, cf_injures_group;
+      var cf,cf_time_dim,cf_all_collisions_group, cf_injures_group, cf_fatalities_group;
 
       // d3.csv(filename, function(error, d){
       //   data = d;
@@ -484,44 +493,113 @@ cfsparkline.draw = function()
         //   pedestrians_involved = +d.pedestrians_involved;
         // });
 
+        var first_date = cfsparkline.dataset[selectedIndex].ts;
 
+
+        // cross-filtering
         cf = crossfilter(cfsparkline.dataset);
         cf_time_dim = cf.dimension( function(d){ return d.ts } );
-        cf_all_collisions_group = cf_time_dim.group().reduceSum( function(d){ return d.all_collisions});
-        cf_injures_group = cf_time_dim.group().reduceSum( function(d){ return d.injures } );      
+        cf_all_collisions_group = cf_time_dim.group().reduceSum( function(d){ return d.all_collisions;});
+        cf_injures_group = cf_time_dim.group().reduceSum( function(d){ return d.injures } );
+        cf_fatalities_group = cf_time_dim.group().reduceSum( function(d){ return d.fatalities } );      
+	cf_cyclists_group = cf_time_dim.group().reduceSum( function(d){ return d.cyclists_involved } );
 
-        
-        var first_date = cfsparkline.dataset[selectedIndex].ts;
+        // red-circle stuff          
+        //var a = d3.time.scale().domain([new Date(2012,06,25),first_date]);
+        //var b = d3.scale.linear().domain(d3.extent(cfsparkline.dataset, function(d){return d.all_collisions;}));
+        //selectedDate = a(first_date);
+        //selectedValue = b(cfsparkline.dataset[selectedIndex].all_collisions);
+        //console.log(selectedDate);
+        //console.log(selectedValue);    
+        //var first_date = cfsparkline.dataset[selectedIndex].ts;
         
         sparkline1
-        .width(400)
-        .height(100)
-        //make it adjusted
+        .width(200)
+        .height(30)
         .x(d3.time.scale().domain([new Date(2012,06,25), first_date]))
-        //.x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.date;})))
         //cheating
-        .margins({top: 0, right: 0, bottom: -1, left: -1})
+        .margins({top: 0, right: 5, bottom: -1, left: -1})
+        // Neil, look at this: it should be parameters, if possible
         .dimension(cf_time_dim)
         .group(cf_all_collisions_group);
   
-        sparkline2
-        .width(400)
-        .height(100)
-        .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
-        // .x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.date;}))
-        .margins({top: 0, right: 0, bottom: -1, left: -1})
+        sparkline4 // to preserve order in csv 2 - injury collisions, 3 - fatal collisions
+        .width(200)
+        .height(30)
+        .x(d3.time.scale().domain([new Date(2012,06,25), first_date]))
+        //cheating
+        .margins({top: 0, right: 5, bottom: -1, left: -1})
+        // Neil, look at this:
         .dimension(cf_time_dim)
         .group(cf_injures_group);
+        
+        sparkline5
+        .width(200)
+        .height(30)
+        .x(d3.time.scale().domain([new Date(2012,06,25), first_date]))
+        //cheating
+        .margins({top: 0, right: 5, bottom: -1, left: -1})
+        .dimension(cf_time_dim)
+        .group(cf_fatalities_group);
 
-        barChart1
+        sparkline6
+        .width(200)
+        .height(30)
+        .x(d3.time.scale().domain([new Date(2012,06,25), first_date]))
+        //cheating
+        .margins({top: 0, right: 5, bottom: -1, left: -1})
+        .dimension(cf_time_dim)
+        .group(cf_cyclists_group);
+
+
+        lineChart1
+        .renderArea(true)
 	.width(960)
     	.height(150)
     	.margins({top: 10, right: 10, bottom: 20, left: 40})
     	.dimension(cf_time_dim)
+        // Neil, here:
         .rangeChart(sparkline1)
         .group(cf_all_collisions_group)
+        // *********************************
         .transitionDuration(500)
         .brushOn(false)
+        .renderHorizontalGridLines(true)
+        .title(cfsparkline.dataset,function(d){
+           return d.label;})
+             //+ "\nNumber of Incidents: " + d.all_collisions;})
+        .elasticY(true)
+        .x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.ts;})))
+        .xUnits(d3.time.week)
+        .xAxis();
+
+        
+        lineChart2
+        .renderArea(true)
+        .width(960)
+        .height(150)
+        .mouseZoomable(true)
+        .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
+        .xUnits(d3.time.week)
+        .elasticY(true)
+        .renderHorizontalGridLines(true)
+        .brushOn(false)
+        .dimension(cf_time_dim)
+        .rangeChart(sparkline4)
+        .group(cf_injures_group);
+
+
+         lineChart3
+        .renderArea(true)
+        .width(960)
+        .height(150)
+        .margins({top: 10, right: 10, bottom: 20, left: 40})
+        .dimension(cf_time_dim)
+        .rangeChart(sparkline5)
+        .group(cf_fatalities_group)
+        .transitionDuration(500)
+        .brushOn(false)
+        .renderHorizontalGridLines(true)
         .title(cfsparkline.dataset,function(d){
            return d.label;})
              //+ "\nNumber of Incidents: " + d.all_collisions;})
@@ -531,57 +609,18 @@ cfsparkline.draw = function()
         .xAxis();
 
 
-          /*
 
-        .width(600)
-        .height(300)
-        .mouseZoomable(true)
-        //.x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
-        .x(d3.time.scale().domain(d3.extent(cfsparkline.dataset, function(d) { return d.ts;})))
-        .xUnits(d3.time.week)
-        .elasticY(true)
-        .renderHorizontalGridLines(true)
-        .brushOn(false)
-        .dimension(cf_time_dim)
-        .rangeChart(sparkline1)
-        .group(cf_all_collisions_group)
-        .title(function(d){
-           return cfsparkline.dataset.label
-             + "\nNumber of Incidents: " + cfsparkline.dataset.all_collisions;
-         });
-        //.renderlet(function (chart) {
-        // rotate x-axis labels
-        //   chart.selectAll('g.x text')
-        //      .attr('transform', 'translate(-10,10) rotate(315)');}); */
-
-        barChart2
-        .width(500)
-        .height(200)
-        .mouseZoomable(true)
-        .x(d3.time.scale().domain([new Date(2012,06,25), new Date(2015,04,19)]))
-        .xUnits(d3.time.week)
-        .elasticY(true)
-        .renderHorizontalGridLines(true)
-        .brushOn(false)
-        .dimension(cf_time_dim)
-        .rangeChart(sparkline2)
-        .group(cf_injures_group);
-
-        
         dc.renderAll();
 
-        var svg = sparkline1.svg();
-       
-        svg.append('circle')
-          .attr('class', 'sparkcircle')
-          .attr('cx', 20)
-          .attr('cy', 100)
-          .attr('r', 3);  
-
-   
+        //red-circle stuff
+        //var svg = sparkline1.svg();
+        
+       //  svg.append('circle')
+       //   .attr('class', 'sparkcircle')
+        //  .attr('cx', 395)
+        //  .attr('cy', 76)
+        //  .attr('r', 3);  
 }
-
-
 
 
 
